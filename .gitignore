@@ -18,7 +18,8 @@ target/
 *.iws
 *.iml
 *.ipr
-*.jpb
+*.mwb.bak
+.jpb/
 
 ### NetBeans ###
 /nbproject/private/
