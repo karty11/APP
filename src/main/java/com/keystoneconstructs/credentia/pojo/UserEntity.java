@@ -8,23 +8,32 @@ import jakarta.persistence.Table;
 import org.hibernate.annotations.Type;
 
 @Entity
-@Table(name = "organization_entity")
-public class OrganizationEntity extends AuditFields{
+@Table(name = "user_entity")
+public class UserEntity extends AuditFields {
 
     @Id
     private String id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "first_name")
+    private String firstName;
 
-    @Column(name = "org_code")
-    private String orgCode;
+    @Column(name = "last_name")
+    private String lastName;
 
-    @Column(name = "industry")
-    private String industry;
+    @Column(name = "initials")
+    private String initials;
+
+    @Column(name = "role")
+    private String role;
 
     @Type(JsonType.class)
     @Column(name = "contact", columnDefinition = "json")
     private Contact contact;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "user_group_id")
+    private String userGroupId;
 
 }
