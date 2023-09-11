@@ -4,27 +4,27 @@ import jakarta.persistence.Column;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class Contact {
+public class ContactEntity {
 
-    @Column(name = "phone_number")
+    @Column( name = "phone_number" )
     private long phoneNumer;
 
-    @Column(name = "address1")
+    @Column( name = "address1" )
     private String address1;
 
-    @Column(name = "address2")
+    @Column( name = "address2" )
     private String address2;
 
-    @Column(name = "location")
+    @Column( name = "location" )
     private String location;
 
-    @Column(name = "linkedIn")
+    @Column( name = "linkedIn" )
     private String linkedIn;
 
-    @Column(name = "official_email")
+    @Column( name = "official_email" )
     private String officialEmail;
 
-    public Contact() {
+    public ContactEntity() {
         //Empty Constructor
     }
 
@@ -32,7 +32,7 @@ public class Contact {
         return phoneNumer;
     }
 
-    public void setPhoneNumer(long phoneNumer) {
+    public void setPhoneNumer( long phoneNumer ) {
         this.phoneNumer = phoneNumer;
     }
 
@@ -40,7 +40,7 @@ public class Contact {
         return address1;
     }
 
-    public void setAddress1(String address1) {
+    public void setAddress1( String address1 ) {
         this.address1 = address1;
     }
 
@@ -48,7 +48,7 @@ public class Contact {
         return address2;
     }
 
-    public void setAddress2(String address2) {
+    public void setAddress2( String address2 ) {
         this.address2 = address2;
     }
 
@@ -56,7 +56,7 @@ public class Contact {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation( String location ) {
         this.location = location;
     }
 
@@ -64,7 +64,7 @@ public class Contact {
         return linkedIn;
     }
 
-    public void setLinkedIn(String linkedIn) {
+    public void setLinkedIn( String linkedIn ) {
         this.linkedIn = linkedIn;
     }
 
@@ -72,24 +72,28 @@ public class Contact {
         return officialEmail;
     }
 
-    public void setOfficialEmail(String officialEmail) {
+    public void setOfficialEmail( String officialEmail ) {
         this.officialEmail = officialEmail;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
+    public boolean equals( Object o ) {
+        if ( this == o ) return true;
 
-        if (o == null || getClass() != o.getClass()) return false;
+        if ( o == null || getClass() != o.getClass() ) return false;
 
-        Contact contact = (Contact) o;
+        ContactEntity contactEntity = ( ContactEntity ) o;
 
-        return new EqualsBuilder().append(phoneNumer, contact.phoneNumer).append(address1, contact.address1).append(address2, contact.address2).append(location, contact.location).append(linkedIn, contact.linkedIn).append(officialEmail, contact.officialEmail).isEquals();
+        return new EqualsBuilder().append( phoneNumer, contactEntity.phoneNumer )
+                .append( address1, contactEntity.address1 ).append( address2, contactEntity.address2 )
+                .append( location, contactEntity.location ).append( linkedIn, contactEntity.linkedIn )
+                .append( officialEmail, contactEntity.officialEmail ).isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(phoneNumer).append(address1).append(address2).append(location).append(linkedIn).append(officialEmail).toHashCode();
+        return new HashCodeBuilder( 17, 37 ).append( phoneNumer ).append( address1 ).append( address2 )
+                .append( location ).append( linkedIn ).append( officialEmail ).toHashCode();
     }
 
     @Override

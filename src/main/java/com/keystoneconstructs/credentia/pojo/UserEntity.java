@@ -10,32 +10,32 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.Type;
 
 @Entity
-@Table(name = "user_entity")
+@Table( name = "user_entity" )
 public class UserEntity extends AuditFields {
 
     @Id
     private String id;
 
-    @Column(name = "first_name")
+    @Column( name = "first_name" )
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column( name = "last_name" )
     private String lastName;
 
-    @Column(name = "initials")
+    @Column( name = "initials" )
     private String initials;
 
-    @Column(name = "role")
+    @Column( name = "role" )
     private String role;
 
-    @Type(JsonType.class)
-    @Column(name = "contact", columnDefinition = "json")
-    private Contact contact;
+    @Type( JsonType.class )
+    @Column( name = "contact", columnDefinition = "json" )
+    private ContactEntity contactEntity;
 
-    @Column(name = "email")
+    @Column( name = "email" )
     private String email;
 
-    @Column(name = "user_group_id")
+    @Column( name = "user_group_id" )
     private String userGroupId;
 
     public UserEntity() {
@@ -46,7 +46,7 @@ public class UserEntity extends AuditFields {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId( String id ) {
         this.id = id;
     }
 
@@ -54,7 +54,7 @@ public class UserEntity extends AuditFields {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    public void setFirstName( String firstName ) {
         this.firstName = firstName;
     }
 
@@ -62,7 +62,7 @@ public class UserEntity extends AuditFields {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
+    public void setLastName( String lastName ) {
         this.lastName = lastName;
     }
 
@@ -70,7 +70,7 @@ public class UserEntity extends AuditFields {
         return initials;
     }
 
-    public void setInitials(String initials) {
+    public void setInitials( String initials ) {
         this.initials = initials;
     }
 
@@ -78,23 +78,23 @@ public class UserEntity extends AuditFields {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole( String role ) {
         this.role = role;
     }
 
-    public Contact getContact() {
-        return contact;
+    public ContactEntity getContact() {
+        return contactEntity;
     }
 
-    public void setContact(Contact contact) {
-        this.contact = contact;
+    public void setContact( ContactEntity contactEntity ) {
+        this.contactEntity = contactEntity;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail( String email ) {
         this.email = email;
     }
 
@@ -102,24 +102,28 @@ public class UserEntity extends AuditFields {
         return userGroupId;
     }
 
-    public void setUserGroupId(String userGroupId) {
+    public void setUserGroupId( String userGroupId ) {
         this.userGroupId = userGroupId;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
+    public boolean equals( Object o ) {
+        if ( this == o ) return true;
 
-        if (o == null || getClass() != o.getClass()) return false;
+        if ( o == null || getClass() != o.getClass() ) return false;
 
-        UserEntity that = (UserEntity) o;
+        UserEntity that = ( UserEntity ) o;
 
-        return new EqualsBuilder().append(id, that.id).append(firstName, that.firstName).append(lastName, that.lastName).append(initials, that.initials).append(role, that.role).append(contact, that.contact).append(email, that.email).append(userGroupId, that.userGroupId).isEquals();
+        return new EqualsBuilder().append( id, that.id ).append( firstName, that.firstName )
+                .append( lastName, that.lastName ).append( initials, that.initials ).append( role, that.role )
+                .append( contactEntity, that.contactEntity ).append( email, that.email )
+                .append( userGroupId, that.userGroupId ).isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(id).append(firstName).append(lastName).append(initials).append(role).append(contact).append(email).append(userGroupId).toHashCode();
+        return new HashCodeBuilder( 17, 37 ).append( id ).append( firstName ).append( lastName ).append( initials )
+                .append( role ).append( contactEntity ).append( email ).append( userGroupId ).toHashCode();
     }
 
     @Override
@@ -130,7 +134,7 @@ public class UserEntity extends AuditFields {
                 ", lastName='" + lastName + '\'' +
                 ", initials='" + initials + '\'' +
                 ", role='" + role + '\'' +
-                ", contact=" + contact +
+                ", contact=" + contactEntity +
                 ", email='" + email + '\'' +
                 ", userGroupId='" + userGroupId + '\'' +
                 '}';

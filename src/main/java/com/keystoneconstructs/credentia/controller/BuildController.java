@@ -14,24 +14,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Tag(name = "Build Test Controller")
-@RequestMapping("/api/v1/build")
+@Tag( name = "Build Test Controller" )
+@RequestMapping( "/api/v1/build" )
 public class BuildController {
 
-    @Value("${environment}")
+    @Value( "${environment}" )
     private String environment;
 
-    @Operation(summary = "API to get current environment in use.", description = "This API will retrieve current deployed environment.")
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = ApiResponse.class), mediaType = "application/json")})
-    @GetMapping("/environment")
-    public ResponseEntity<ApiResponse<String>> getEnvironment() {
+    @Operation( summary = "API to get current environment in use.",
+            description = "This API will retrieve current deployed environment." )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
+            @Content( schema = @Schema( implementation = ApiResponse.class ), mediaType = "application/json" ) } )
+    @GetMapping( "/environment" )
+    public ResponseEntity< ApiResponse< String > > getEnvironment() {
 
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-        apiResponse.setResponse("Environment : " + environment);
-        apiResponse.setSuccess(true);
-        apiResponse.setMessage("Successfully recieved deployed environment.");
+        ApiResponse< String > apiResponse = new ApiResponse<>();
+        apiResponse.setResponse( "Environment : " + environment );
+        apiResponse.setSuccess( true );
+        apiResponse.setMessage( "Successfully recieved deployed environment." );
 
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        return new ResponseEntity<>( apiResponse, HttpStatus.OK );
 
     }
 

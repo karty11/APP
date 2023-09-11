@@ -12,19 +12,19 @@ public class SwaggerConfiguration {
     public OpenAPI myOpenAPI() {
 
         Contact contact = new Contact();
-        contact.setEmail("rishabh@keystoneconstructs.com");
-        contact.setName("R Rishabh Keeshan");
+        contact.setEmail( "rishabh@keystoneconstructs.com" );
+        contact.setName( "R Rishabh Keeshan" );
 
-        License license = new License().name("Apache 2.0").url("https://www.apache.org/licenses/LICENSE-2.0.html");
+        License license = new License().name( "Apache 2.0" ).url( "https://www.apache.org/licenses/LICENSE-2.0.html" );
 
         Info info = new Info()
-                .title("Credentia Backend API")
-                .version("0.0")
-                .contact(contact)
-                .description("This API exposes endpoints to manage credentia services.")
-                .license(license);
+                .title( "Credentia Backend API" )
+                .version( "0.0" )
+                .contact( contact )
+                .description( "This API exposes endpoints to manage credentia services." )
+                .license( license );
 
-        return new OpenAPI().info(info);
+        return new OpenAPI().info( info );
     }
 
 }
