@@ -5,6 +5,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.Type;
 
 @Entity
@@ -26,5 +28,76 @@ public class OrganizationEntity extends AuditFields{
     @Type(JsonType.class)
     @Column(name = "contact", columnDefinition = "json")
     private Contact contact;
+
+    public OrganizationEntity() {
+        //Empty Constructor
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getOrgCode() {
+        return orgCode;
+    }
+
+    public void setOrgCode(String orgCode) {
+        this.orgCode = orgCode;
+    }
+
+    public String getIndustry() {
+        return industry;
+    }
+
+    public void setIndustry(String industry) {
+        this.industry = industry;
+    }
+
+    public Contact getContact() {
+        return contact;
+    }
+
+    public void setContact(Contact contact) {
+        this.contact = contact;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        OrganizationEntity that = (OrganizationEntity) o;
+
+        return new EqualsBuilder().append(id, that.id).append(name, that.name).append(orgCode, that.orgCode).append(industry, that.industry).append(contact, that.contact).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(id).append(name).append(orgCode).append(industry).append(contact).toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", orgCode='" + orgCode + '\'' +
+                ", industry='" + industry + '\'' +
+                ", contact=" + contact +
+                '}';
+    }
 
 }
