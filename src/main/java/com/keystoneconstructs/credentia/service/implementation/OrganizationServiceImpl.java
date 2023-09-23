@@ -1,0 +1,179 @@
+package com.keystoneconstructs.credentia.service.implementation;
+
+import com.keystoneconstructs.credentia.constant.Constants;
+import com.keystoneconstructs.credentia.converters.Converter;
+import com.keystoneconstructs.credentia.exception.AppException;
+import com.keystoneconstructs.credentia.exception.EntityNotFoundException;
+import com.keystoneconstructs.credentia.exception.InvalidInputException;
+import com.keystoneconstructs.credentia.model.OrganizationRequest;
+import com.keystoneconstructs.credentia.model.OrganizationResponse;
+import com.keystoneconstructs.credentia.pojo.OrganizationEntity;
+import com.keystoneconstructs.credentia.repository.OrganizationRepository;
+import com.keystoneconstructs.credentia.service.OrganizationService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Component
+@Slf4j
+public class OrganizationServiceImpl implements OrganizationService {
+
+    @Autowired
+    OrganizationRepository organizationRepository;
+
+    @Override
+    public OrganizationResponse createOrgainzation( OrganizationRequest organizationRequest ) throws InvalidInputException, AppException {
+
+        if( organizationRequest == null || StringUtils.isEmpty( organizationRequest.getName() ) || StringUtils.isEmpty(
+                organizationRequest.getOrgCode() ) ) {
+            log.error( "Invalid request body. Please check all inputs." );
+            throw new InvalidInputException( "Invalid request body. Please check all inputs." );
+        }
+
+        Optional<OrganizationEntity> organization = organizationRepository.findByNameIgnoreCase(
+                organizationRequest.getName() );
+
+        if( organization.isPresent() ) {
+            log.error( "Organization with name " + organizationRequest.getName() + " exists." );
+            throw new AppException( "Organization with name " + organizationRequest.getName() + " exists." );
+        }
+
+        OrganizationEntity organizationEntity = new OrganizationEntity();
+        organizationEntity.setId( UUID.randomUUID().toString() );
+        organizationEntity.setName( organizationRequest.getName() );
+        organizationEntity.setOrgCode( organizationRequest.getOrgCode() );
+
+        if( StringUtils.isNotEmpty( organizationRequest.getIndustry() ) ) {
+            organizationEntity.setIndustry( organizationRequest.getIndustry() );
+        }
+
+        if( organizationRequest.getContact() != null ) {
+            organizationEntity.setContact( Converter.convertContactToEntity( organizationRequest.getContact() ) );
+        }
+
+        try {
+            return Converter.convertOrganizationEntityToResponse( organizationRepository.save( organizationEntity ) );
+        } catch( Exception e ) {
+            log.error( "Failed to add Organization." );
+            throw new AppException( "Failed to add Organization." );
+        }
+
+    }
+
+    @Override
+    public OrganizationResponse updateOrganization( OrganizationRequest organizationRequest, String organizationId ) throws InvalidInputException, EntityNotFoundException, AppException {
+
+        if( StringUtils.isEmpty( organizationId ) || organizationRequest == null ) {
+            log.info( "Organization Id or Organization Request cannot be null or empty." );
+            throw new InvalidInputException( "Organization Id or Organization Request cannot be null or empty." );
+        }
+
+        Optional<OrganizationEntity> organization = organizationRepository.findById( organizationId );
+
+        if( organization.isEmpty() ) {
+            log.error( "Organization with id " + organizationId + "was not found." );
+            throw new EntityNotFoundException( "Organization with id " + organizationId + "was not found." );
+        }
+
+        OrganizationEntity organizationEntity = organization.get();
+
+        if( StringUtils.isEmpty( organizationEntity.getName() ) || ( StringUtils.isNotEmpty(
+                organizationRequest.getName() ) ) && !organizationRequest.getName()
+                .equals( organizationEntity.getName() ) ) {
+            organizationEntity.setName( organizationRequest.getName() );
+        }
+
+        if( StringUtils.isEmpty( organizationEntity.getIndustry() ) || ( StringUtils.isNotEmpty(
+                organizationRequest.getIndustry() ) && !organizationRequest.getIndustry()
+                .equals( organizationEntity.getIndustry() ) ) ) {
+            organizationEntity.setIndustry( organizationRequest.getIndustry() );
+        }
+
+        if( StringUtils.isNotEmpty( organizationEntity.getOrgCode() ) || ( StringUtils.isNotEmpty(
+                organizationRequest.getOrgCode() ) && !organizationRequest.getOrgCode()
+                .equals( organizationEntity.getOrgCode() ) ) ) {
+            organizationEntity.setOrgCode( organizationRequest.getOrgCode() );
+        }
+
+        if( organizationRequest.getContact() != null ) {
+            organizationEntity.setContact( Converter.convertContactToEntity( organizationRequest.getContact() ) );
+        }
+
+        try {
+            return Converter.convertOrganizationEntityToResponse( organizationRepository.save( organizationEntity ) );
+        } catch( Exception e ) {
+            log.error( "Failed to update Organization with id -> " + organizationId );
+            throw new AppException( "Failed to update Organization with id -> " + organizationId );
+        }
+
+    }
+
+    @Override
+    public OrganizationResponse findOrganizationById( String organizationId ) throws EntityNotFoundException, InvalidInputException {
+
+        if( StringUtils.isEmpty( organizationId ) ) {
+            log.error( "Organization Id cannot be null or empty." );
+            throw new InvalidInputException( "Organization Id cannot be null or empty." );
+        }
+
+        Optional<OrganizationEntity> organization = organizationRepository.findById( organizationId );
+
+        if( organization.isEmpty() ) {
+            log.error( "Organization with id " + organizationId + " was not found." );
+            throw new EntityNotFoundException( "Organization with id " + organizationId + " was not found." );
+        }
+
+        return Converter.convertOrganizationEntityToResponse( organization.get() );
+
+    }
+
+    @Override public List<OrganizationResponse> findAllOrganizations() {
+
+        List<OrganizationEntity> organizations = organizationRepository.findAll();
+
+        if( organizations.isEmpty() ) {
+            return Collections.emptyList();
+        }
+
+        return organizations.stream().map( Converter::convertOrganizationEntityToResponse ).toList();
+
+    }
+
+    @Override public String deleteOrganizationById( String organizationId ) throws InvalidInputException, EntityNotFoundException, AppException {
+
+        if( StringUtils.isEmpty( organizationId ) ) {
+            log.error( "Organization Id cannot be null or empty." );
+            throw new InvalidInputException( "Organization Id cannot be null or empty." );
+        }
+
+        Optional<OrganizationEntity> organization = organizationRepository.findById( organizationId );
+
+        if( organization.isEmpty() ) {
+            log.error( "Organization with id " + organizationId + " was not found." );
+            throw new EntityNotFoundException( "Organization with id " + organizationId + " was not found." );
+        }
+
+        try{
+            organizationRepository.delete( organization.get() );
+        }catch( Exception e ){
+            log.error( "Failed to delete organization with id " + organizationId + "." );
+            throw new AppException( "Failed to delete organization with id " + organizationId + "." );
+        }
+
+        return Constants.SUCCESS;
+
+    }
+
+
+    /***************************************************************
+     ******************* Private Methods ***************************
+     ***************************************************************/
+
+
+}
