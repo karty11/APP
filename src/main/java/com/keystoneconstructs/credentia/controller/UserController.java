@@ -1,0 +1,239 @@
+package com.keystoneconstructs.credentia.controller;
+
+
+import com.keystoneconstructs.credentia.exception.AppException;
+import com.keystoneconstructs.credentia.exception.EntityNotFoundException;
+import com.keystoneconstructs.credentia.exception.InvalidInputException;
+import com.keystoneconstructs.credentia.model.ApiResponse;
+import com.keystoneconstructs.credentia.model.UserRequest;
+import com.keystoneconstructs.credentia.model.UserResponse;
+import com.keystoneconstructs.credentia.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
+
+@RestController
+@Tag( name = "User Controller", description = "Controller for all User API endpoints.")
+@RequestMapping( "api/v1/user" )
+public class UserController {
+
+    @Autowired
+    UserService userService;
+
+
+    @Operation( summary = "API to create new User.",
+            description = "This API creates a new User based on User Request." )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
+            @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
+    @PutMapping( "/add" )
+    public ResponseEntity<ApiResponse<UserResponse>> createUser( @RequestBody UserRequest userRequest ) {
+
+        ApiResponse<UserResponse> response = new ApiResponse<>();
+        try {
+
+            response.setSuccess( true );
+            response.setMessage( "Successfully created new User." );
+            response.setResponse( userService.createUser( userRequest ) );
+
+            return new ResponseEntity<>( response, HttpStatus.CREATED );
+
+        } catch( InvalidInputException | AppException e ) {
+
+            response.setSuccess( false );
+            response.setMessage( e.getMessage() );
+            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
+
+            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
+
+        }
+
+    }
+
+
+    @Operation( summary = "API to update existing User.",
+            description = "This API updates an existing User based on User Id and User Request." )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
+            @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
+    @PostMapping( "/edit" )
+    public ResponseEntity<ApiResponse<UserResponse>> updateUser(
+            @RequestParam( name = "userId" ) String userId, @RequestBody UserRequest userRequest ) {
+
+        ApiResponse<UserResponse> response = new ApiResponse<>();
+        try {
+
+            response.setSuccess( true );
+            response.setMessage( "Successfully updated User." );
+            response.setResponse( userService.updateUser( userRequest, userId ) );
+
+            return new ResponseEntity<>( response, HttpStatus.OK );
+
+        } catch( InvalidInputException | AppException | EntityNotFoundException e ) {
+
+            response.setSuccess( false );
+            response.setMessage( e.getMessage() );
+            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
+
+            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
+
+        }
+
+    }
+
+
+    @Operation( summary = "API to get existing User by Id.",
+            description = "This API retrieves an existing User based on User Id." )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
+            @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
+    @GetMapping( "/getById" )
+    public ResponseEntity<ApiResponse<UserResponse>> getUserById( @RequestParam( name = "userId" ) String userId ) {
+
+        ApiResponse<UserResponse> response = new ApiResponse<>();
+        try {
+
+            response.setSuccess( true );
+            response.setMessage( "Successfully retrieved User." );
+            response.setResponse( userService.findUserById( userId ) );
+
+            return new ResponseEntity<>( response, HttpStatus.OK );
+
+        } catch( InvalidInputException | EntityNotFoundException e ) {
+
+            response.setSuccess( false );
+            response.setMessage( e.getMessage() );
+            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
+
+            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
+
+        }
+
+    }
+
+
+    @Operation( summary = "API to get existing User by Email.",
+            description = "This API retrieves an existing User based on User Email." )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
+            @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
+    @GetMapping( "/getByEmail" )
+    public ResponseEntity<ApiResponse<UserResponse>> getUserByEmail( @RequestParam( name = "email" ) String email ) {
+
+        ApiResponse<UserResponse> response = new ApiResponse<>();
+        try {
+
+            response.setSuccess( true );
+            response.setMessage( "Successfully retrieved User." );
+            response.setResponse( userService.findUserByEmail( email ) );
+
+            return new ResponseEntity<>( response, HttpStatus.OK );
+
+        } catch( InvalidInputException | EntityNotFoundException e ) {
+
+            response.setSuccess( false );
+            response.setMessage( e.getMessage() );
+            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
+
+            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
+
+        }
+
+    }
+
+
+    @Operation( summary = "API to get all existing Users by User Group Id.",
+            description = "This API retrieves all existing Users based on User Group Id." )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
+            @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
+    @GetMapping( "/getAllByGroupId" )
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsersByGroupId(
+            @RequestParam( name = "groupId" ) String groupId ) {
+
+        ApiResponse<List<UserResponse>> response = new ApiResponse<>();
+        try {
+
+            response.setSuccess( true );
+            response.setMessage( "Successfully retrieved all Users." );
+            response.setResponse( userService.findAllUsersByUserGroupId( groupId ) );
+
+            return new ResponseEntity<>( response, HttpStatus.OK );
+
+        } catch( InvalidInputException | EntityNotFoundException e ) {
+
+            response.setSuccess( false );
+            response.setMessage( e.getMessage() );
+            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
+
+            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
+
+        }
+
+    }
+
+
+    @Operation( summary = "API to get all existing Users by Organization Id.",
+            description = "This API retrieves all existing Users based on Organization Id." )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
+            @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
+    @GetMapping( "/getAllByOrg" )
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsersByOrg(
+            @RequestParam( name = "orgId" ) String orgId ) {
+
+        ApiResponse<List<UserResponse>> response = new ApiResponse<>();
+        try {
+
+            response.setSuccess( true );
+            response.setMessage( "Successfully retrieved all Users." );
+            response.setResponse( userService.findAllUsersByOrganizationId( orgId ) );
+
+            return new ResponseEntity<>( response, HttpStatus.OK );
+
+        } catch( InvalidInputException | EntityNotFoundException e ) {
+
+            response.setSuccess( false );
+            response.setMessage( e.getMessage() );
+            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
+
+            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
+
+        }
+
+    }
+
+
+    @Operation( summary = "API to delete a User by Id.",
+            description = "This API deletes an existing User based on User Id." )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
+            @Content( schema = @Schema( implementation = String.class ), mediaType = "application/json" ) } )
+    @PostMapping( "/deleteById" )
+    public ResponseEntity<ApiResponse<String>> deleteById(
+            @RequestParam( name = "userId" ) String userId ) {
+
+        ApiResponse<String> response = new ApiResponse<>();
+        try {
+
+            response.setSuccess( true );
+            response.setMessage( "Successfully deleted User." );
+            response.setResponse( userService.deleteUserById( userId ) );
+
+            return new ResponseEntity<>( response, HttpStatus.OK );
+
+        } catch( InvalidInputException | AppException | EntityNotFoundException e ) {
+
+            response.setSuccess( false );
+            response.setMessage( e.getMessage() );
+            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
+
+            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
+
+        }
+
+    }
+
+
+}

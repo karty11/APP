@@ -21,5 +21,7 @@ public class UserResponse {
 
     private String UserGroupId;
 
+    private OrganizationResponse organizationResponse;
+
 
 }

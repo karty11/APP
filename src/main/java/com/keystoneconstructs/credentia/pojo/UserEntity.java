@@ -1,10 +1,7 @@
 package com.keystoneconstructs.credentia.pojo;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.Type;
@@ -37,6 +34,13 @@ public class UserEntity extends AuditFields {
 
     @Column( name = "user_group_id" )
     private String userGroupId;
+
+    @Column(name = "is_deleted")
+    private boolean deleted;
+
+    @ManyToOne
+    @JoinColumn(name = "organization_id", nullable = false)
+    private OrganizationEntity organization;
 
     public UserEntity() {
         //Empty Constructor
@@ -82,14 +86,6 @@ public class UserEntity extends AuditFields {
         this.role = role;
     }
 
-    public ContactEntity getContact() {
-        return contactEntity;
-    }
-
-    public void setContact( ContactEntity contactEntity ) {
-        this.contactEntity = contactEntity;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -106,39 +102,62 @@ public class UserEntity extends AuditFields {
         this.userGroupId = userGroupId;
     }
 
-    @Override
-    public boolean equals( Object o ) {
-        if ( this == o ) return true;
+    public ContactEntity getContactEntity() {
+        return contactEntity;
+    }
 
-        if ( o == null || getClass() != o.getClass() ) return false;
+    public void setContactEntity( ContactEntity contactEntity ) {
+        this.contactEntity = contactEntity;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted( boolean deleted ) {
+        this.deleted = deleted;
+    }
+
+    public OrganizationEntity getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization( OrganizationEntity organization ) {
+        this.organization = organization;
+    }
+
+    @Override public boolean equals( Object o ) {
+        if( this == o ) return true;
+
+        if( o == null || getClass() != o.getClass() ) return false;
 
         UserEntity that = ( UserEntity ) o;
 
-        return new EqualsBuilder().append( id, that.id ).append( firstName, that.firstName )
-                .append( lastName, that.lastName ).append( initials, that.initials ).append( role, that.role )
-                .append( contactEntity, that.contactEntity ).append( email, that.email )
-                .append( userGroupId, that.userGroupId ).isEquals();
+        return new EqualsBuilder().append( deleted, that.deleted ).append( id, that.id )
+                .append( firstName, that.firstName ).append( lastName, that.lastName ).append( initials, that.initials )
+                .append( role, that.role ).append( contactEntity, that.contactEntity ).append( email, that.email )
+                .append( userGroupId, that.userGroupId ).append( organization, that.organization ).isEquals();
     }
 
-    @Override
-    public int hashCode() {
+    @Override public int hashCode() {
         return new HashCodeBuilder( 17, 37 ).append( id ).append( firstName ).append( lastName ).append( initials )
-                .append( role ).append( contactEntity ).append( email ).append( userGroupId ).toHashCode();
+                .append( role ).append( contactEntity ).append( email ).append( userGroupId ).append( deleted )
+                .append( organization ).toHashCode();
     }
 
-    @Override
-    public String toString() {
+    @Override public String toString() {
         return "{" +
                 "id='" + id + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", initials='" + initials + '\'' +
                 ", role='" + role + '\'' +
-                ", contact=" + contactEntity +
+                ", contactEntity=" + contactEntity +
                 ", email='" + email + '\'' +
                 ", userGroupId='" + userGroupId + '\'' +
+                ", deleted=" + deleted +
+                ", organization=" + organization +
                 '}';
     }
-
 
 }

@@ -1,7 +1,12 @@
 package com.keystoneconstructs.credentia.repository;
 
 import com.keystoneconstructs.credentia.pojo.OrganizationEntity;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface OrganizationRepository extends CrudRepository<OrganizationEntity, String> {
+import java.util.Optional;
+
+public interface OrganizationRepository extends JpaRepository<OrganizationEntity, String> {
+
+    Optional<OrganizationEntity> findByNameIgnoreCase( String name );
+
 }

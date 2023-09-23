@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Tag( name = "Build Test Controller" )
+@Tag( name = "Build Test Controller", description = "Controller to test Build related APIs.")
 @RequestMapping( "/api/v1/build" )
 public class BuildController {
 
@@ -24,7 +24,7 @@ public class BuildController {
     @Operation( summary = "API to get current environment in use.",
             description = "This API will retrieve current deployed environment." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
-            @Content( schema = @Schema( implementation = ApiResponse.class ), mediaType = "application/json" ) } )
+            @Content( schema = @Schema( implementation = String.class ), mediaType = "application/json" ) } )
     @GetMapping( "/environment" )
     public ResponseEntity< ApiResponse< String > > getEnvironment() {
 

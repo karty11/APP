@@ -17,4 +17,8 @@ public class UserRequest {
 
     private Contact contact;
 
+    private String organizationId;
+
+    private UserOrganizationRequest organizationRequest;
+
 }
