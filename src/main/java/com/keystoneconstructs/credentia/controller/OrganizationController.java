@@ -129,7 +129,7 @@ public class OrganizationController {
             @Content( schema = @Schema( implementation = OrganizationResponse.class ),
                     mediaType = "application/json" ) } )
     @GetMapping( "/getAll" )
-    public ResponseEntity<ApiResponse<List<OrganizationResponse>>> getAllUsersByGroupId() {
+    public ResponseEntity<ApiResponse<List<OrganizationResponse>>> getAllOrganizations() {
 
         ApiResponse<List<OrganizationResponse>> response = new ApiResponse<>();
         response.setSuccess( true );
