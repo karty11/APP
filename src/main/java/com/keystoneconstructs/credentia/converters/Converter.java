@@ -1,8 +1,10 @@
 package com.keystoneconstructs.credentia.converters;
 
+import com.keystoneconstructs.credentia.model.CertificateResponse;
 import com.keystoneconstructs.credentia.model.Contact;
 import com.keystoneconstructs.credentia.model.OrganizationResponse;
 import com.keystoneconstructs.credentia.model.UserResponse;
+import com.keystoneconstructs.credentia.pojo.CertificateEntity;
 import com.keystoneconstructs.credentia.pojo.ContactEntity;
 import com.keystoneconstructs.credentia.pojo.OrganizationEntity;
 import com.keystoneconstructs.credentia.pojo.UserEntity;
@@ -77,6 +79,7 @@ public interface Converter {
 
     /**
      * This method converts a User Entity to User Response Object.
+     *
      * @param userEntity
      * @return userResponse
      */
@@ -109,6 +112,7 @@ public interface Converter {
 
     /**
      * This method converts an Organization Entity to Organization Response object.
+     *
      * @param organizationEntity
      * @return organizationResponse
      */
@@ -125,6 +129,36 @@ public interface Converter {
         }
 
         return organizationResponse;
+
+    }
+
+    static CertificateResponse convertCertificateEntityToResponse( CertificateEntity certificateEntity ) {
+
+        CertificateResponse certificateResponse = new CertificateResponse();
+        certificateResponse.setId( certificateEntity.getId() );
+        certificateResponse.setName( certificateEntity.getName() );
+        certificateResponse.setIssuingAuthority( certificateEntity.getIssuingAuthority() );
+        certificateResponse.setCompanyBranding( certificateEntity.getCompanyBranding() );
+        certificateResponse.setOrganizationResponse(
+                convertOrganizationEntityToResponse( certificateEntity.getOrganization() ) );
+
+        if( StringUtils.isNotEmpty( certificateEntity.getCertificationCriteria() ) ) {
+            certificateResponse.setCertificationCriteria( certificateEntity.getCertificationCriteria() );
+        }
+
+        if( StringUtils.isNotEmpty( certificateEntity.getRevokeCriteria() ) ) {
+            certificateResponse.setRevokeCriteria( certificateEntity.getRevokeCriteria() );
+        }
+
+        if( StringUtils.isNotEmpty( certificateEntity.getCourseUrl() ) ) {
+            certificateResponse.setCourseUrl( certificateEntity.getCourseUrl() );
+        }
+
+        if( StringUtils.isNotEmpty( certificateEntity.getWebsite() ) ) {
+            certificateResponse.setWebsite( certificateEntity.getWebsite() );
+        }
+
+        return certificateResponse;
 
     }
 
