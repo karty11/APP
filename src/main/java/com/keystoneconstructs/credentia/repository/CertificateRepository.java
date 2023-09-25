@@ -13,4 +13,5 @@ public interface CertificateRepository extends JpaRepository<CertificateEntity, 
 
 
     List<CertificateEntity> findAllByOrganization_id(String orgId);
+
 }

@@ -1,17 +1,16 @@
 package com.keystoneconstructs.credentia.converters;
 
-import com.keystoneconstructs.credentia.model.CertificateResponse;
-import com.keystoneconstructs.credentia.model.Contact;
-import com.keystoneconstructs.credentia.model.OrganizationResponse;
-import com.keystoneconstructs.credentia.model.UserResponse;
-import com.keystoneconstructs.credentia.pojo.CertificateEntity;
-import com.keystoneconstructs.credentia.pojo.ContactEntity;
-import com.keystoneconstructs.credentia.pojo.OrganizationEntity;
-import com.keystoneconstructs.credentia.pojo.UserEntity;
+import com.keystoneconstructs.credentia.model.*;
+import com.keystoneconstructs.credentia.pojo.*;
 import org.apache.commons.lang3.StringUtils;
 
 public interface Converter {
 
+    /**
+     * This method converts Contact Object to Contact Entity.
+     * @param contact
+     * @return contactEntity
+     */
     static ContactEntity convertContactToEntity( Contact contact ) {
 
         ContactEntity contactEntity = new ContactEntity();
@@ -45,6 +44,11 @@ public interface Converter {
     }
 
 
+    /**
+     * This method converts Contact Entity to Contact object.
+     * @param contactEntity
+     * @return contact
+     */
     static Contact convertEntityToContact( ContactEntity contactEntity ) {
 
         Contact contact = new Contact();
@@ -79,7 +83,6 @@ public interface Converter {
 
     /**
      * This method converts a User Entity to User Response Object.
-     *
      * @param userEntity
      * @return userResponse
      */
@@ -112,7 +115,6 @@ public interface Converter {
 
     /**
      * This method converts an Organization Entity to Organization Response object.
-     *
      * @param organizationEntity
      * @return organizationResponse
      */
@@ -132,6 +134,11 @@ public interface Converter {
 
     }
 
+    /**
+     * This method converts a Certificate Entity to Certificate Response.
+     * @param certificateEntity
+     * @return certificateResponse
+     */
     static CertificateResponse convertCertificateEntityToResponse( CertificateEntity certificateEntity ) {
 
         CertificateResponse certificateResponse = new CertificateResponse();
@@ -159,6 +166,29 @@ public interface Converter {
         }
 
         return certificateResponse;
+
+    }
+
+    /**
+     * This method converts a Certifier Entity to Certifier Response type.
+     * @param certifierEntity
+     * @return certifierResponse
+     */
+    static CertifierResponse convertCertifierEntityToResponse( CertifierEntity certifierEntity ) {
+
+        CertifierResponse certifierResponse = new CertifierResponse();
+        certifierResponse.setId( certifierEntity.getId() );
+        certifierResponse.setCertificate( convertCertificateEntityToResponse( certifierEntity.getCertificate() ) );
+        certifierResponse.setBatchNumber( certifierEntity.getBatchNumber() );
+        certifierResponse.setTrainingStartDate( certifierEntity.getTrainingStartDate() );
+        certifierResponse.setTrainingEndDate( certifierEntity.getTrainingEndDate() );
+        certifierResponse.setIssueDate( certifierEntity.getIssueDate() );
+        certifierResponse.setExpirationDate( certifierEntity.getExpirationDate() );
+        certifierResponse.setRecipientName( certifierEntity.getRecipientName() );
+        certifierResponse.setRecipientEmail( certifierEntity.getRecipientEmail() );
+        certifierResponse.setRecipientOrganization( certifierEntity.getRecipientOrganization() );
+
+        return certifierResponse;
 
     }
 
