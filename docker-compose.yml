@@ -1,5 +1,4 @@
-version: '1'
-name: credentia-be
+#name: credentia-be
 services:
   credentia-springboot:
     container_name: credentia-springboot
@@ -11,18 +10,21 @@ services:
       - 9090:9090
     networks:
       - credentia-backend
+    depends_on:
+      - credentia-mysql
     volumes:
-      - credentia:/app
+      - credentia
     restart: always
 
   credentia-mysql:
     container_name: credentia-mysql
     image: mysql:8.1.0
     environment:
-      MYSQL_DATABASE: 'credentia'
-      MYSQL_SERVER: 'admin'
-      MYSQL_PASSWORD: 'credentiaAdmin123'
-      MYSQL_ROOT_PASSWORD: 'credentiaRoot123'
+      - MYSQL_DATABASE= 'credentia'
+      - MYSQL_USER= 'admin'
+      - MYSQL_PASSWORD= 'credentiaAdmin123'
+      - MYSQL_ROOT_PASSWORD= 'credentiaRoot123'
+      - MYSQL_ROOT_HOST= '%'
     ports:
       - 3309:3306
     expose:
@@ -31,6 +33,7 @@ services:
       - credentia-backend
     volumes:
       - credentia-mysql:/var/lib/mysql
+    restart: always
 
 
 networks:
