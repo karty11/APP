@@ -4,6 +4,6 @@ WORKDIR /app
 
 COPY ./target/credentia-0.0.1-SNAPSHOT.jar /app/app.jar
 
-EXPOSE 8080
+EXPOSE 9090
 
 CMD ["java", "-jar", "app.jar"]
