@@ -9,12 +9,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Tag( name = "Build Test Controller", description = "Controller to test Build related APIs.")
+@Tag( name = "Build Test Controller", description = "Controller to test Build related APIs." )
 @RequestMapping( "/api/v1/build" )
 public class BuildController {
 
@@ -25,10 +26,11 @@ public class BuildController {
             description = "This API will retrieve current deployed environment." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = String.class ), mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/environment" )
-    public ResponseEntity< ApiResponse< String > > getEnvironment() {
+    public ResponseEntity<ApiResponse<String>> getEnvironment() {
 
-        ApiResponse< String > apiResponse = new ApiResponse<>();
+        ApiResponse<String> apiResponse = new ApiResponse<>();
         apiResponse.setResponse( "Environment : " + environment );
         apiResponse.setSuccess( true );
         apiResponse.setMessage( "Successfully recieved deployed environment." );
