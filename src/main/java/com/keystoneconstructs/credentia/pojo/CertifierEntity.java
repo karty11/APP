@@ -14,7 +14,7 @@ public class CertifierEntity extends AuditFields {
     @Id
     private String id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn( name = "certificate_id", nullable = false )
     private CertificateEntity certificate;
 
