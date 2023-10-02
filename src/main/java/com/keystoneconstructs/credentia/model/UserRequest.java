@@ -21,4 +21,6 @@ public class UserRequest {
 
     private UserOrganizationRequest organizationRequest;
 
+    private String password;
+
 }

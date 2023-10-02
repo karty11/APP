@@ -8,8 +8,8 @@ public interface Converter {
 
     /**
      * This method converts Contact Object to Contact Entity.
-     * @param contact
-     * @return contactEntity
+     * @param contact - Contact Object.
+     * @return contactEntity - Contact Entity Object.
      */
     static ContactEntity convertContactToEntity( Contact contact ) {
 
@@ -46,8 +46,8 @@ public interface Converter {
 
     /**
      * This method converts Contact Entity to Contact object.
-     * @param contactEntity
-     * @return contact
+     * @param contactEntity - Contact Entity Object.
+     * @return contact - Contact Object.
      */
     static Contact convertEntityToContact( ContactEntity contactEntity ) {
 
@@ -83,8 +83,8 @@ public interface Converter {
 
     /**
      * This method converts a User Entity to User Response Object.
-     * @param userEntity
-     * @return userResponse
+     * @param userEntity - User Entity Object.
+     * @return userResponse - User Response Object.
      */
     static UserResponse convertUserEntityToResponse( UserEntity userEntity ) {
 
@@ -97,7 +97,7 @@ public interface Converter {
         userResponse.setOrganizationResponse( convertOrganizationEntityToResponse( userEntity.getOrganization() ) );
 
         if( StringUtils.isNotEmpty( userEntity.getInitials() ) ) {
-            userResponse.setIntials( userEntity.getInitials() );
+            userResponse.setInitials( userEntity.getInitials() );
         }
 
         if( userEntity.getContactEntity() != null ) {
@@ -115,8 +115,8 @@ public interface Converter {
 
     /**
      * This method converts an Organization Entity to Organization Response object.
-     * @param organizationEntity
-     * @return organizationResponse
+     * @param organizationEntity - Organization Entity Object.
+     * @return organizationResponse - Organization Response Object.
      */
     static OrganizationResponse convertOrganizationEntityToResponse( OrganizationEntity organizationEntity ) {
 
@@ -136,8 +136,8 @@ public interface Converter {
 
     /**
      * This method converts a Certificate Entity to Certificate Response.
-     * @param certificateEntity
-     * @return certificateResponse
+     * @param certificateEntity - Certificate Entity Object.
+     * @return certificateResponse - Certificate Response Object.
      */
     static CertificateResponse convertCertificateEntityToResponse( CertificateEntity certificateEntity ) {
 
@@ -171,8 +171,8 @@ public interface Converter {
 
     /**
      * This method converts a Certifier Entity to Certifier Response type.
-     * @param certifierEntity
-     * @return certifierResponse
+     * @param certifierEntity - Certifier Entity Object.
+     * @return certifierResponse - Certifier Response Object.
      */
     static CertifierResponse convertCertifierEntityToResponse( CertifierEntity certifierEntity ) {
 

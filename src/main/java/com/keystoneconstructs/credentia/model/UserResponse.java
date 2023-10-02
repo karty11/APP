@@ -11,7 +11,7 @@ public class UserResponse {
 
     private String lastName;
 
-    private String intials;
+    private String initials;
 
     private String role;
 
@@ -19,7 +19,7 @@ public class UserResponse {
 
     private String email;
 
-    private String UserGroupId;
+    private String userGroupId;
 
     private OrganizationResponse organizationResponse;
 

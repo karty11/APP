@@ -6,8 +6,6 @@ import com.keystoneconstructs.credentia.exception.InvalidInputException;
 import com.keystoneconstructs.credentia.model.*;
 import com.keystoneconstructs.credentia.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,7 +42,7 @@ public class OrganizationController {
 
             response.setSuccess( true );
             response.setMessage( "Successfully created new Organization." );
-            response.setResponse( organizationService.createOrgainzation( organizationRequest ) );
+            response.setResponse( organizationService.createOrganization( organizationRequest ) );
 
             return new ResponseEntity<>( response, HttpStatus.CREATED );
 

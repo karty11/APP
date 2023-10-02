@@ -4,6 +4,7 @@ import com.keystoneconstructs.credentia.exception.AppException;
 import com.keystoneconstructs.credentia.exception.EntityNotFoundException;
 import com.keystoneconstructs.credentia.exception.InvalidInputException;
 import com.keystoneconstructs.credentia.model.ApiResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -11,7 +12,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
+@Slf4j
 @ControllerAdvice
 public class CredentiaControllerAdvice {
 
@@ -21,6 +25,9 @@ public class CredentiaControllerAdvice {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
         String stackTrace = convertStackTraceToString( e );
+
+        log.error( e.getMessage() );
+        log.error( stackTrace );
 
         ApiResponse<String> apiResponse = new ApiResponse<>();
         apiResponse.setSuccess( false );
@@ -36,6 +43,9 @@ public class CredentiaControllerAdvice {
 
         String stackTrace = convertStackTraceToString( e );
 
+        log.error( e.getMessage() );
+        log.error( stackTrace );
+
         ApiResponse<String> apiResponse = new ApiResponse<>();
         apiResponse.setSuccess( false );
         apiResponse.setMessage( e.getMessage() );
@@ -49,6 +59,9 @@ public class CredentiaControllerAdvice {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
         String stackTrace = convertStackTraceToString( e );
+
+        log.error( e.getMessage() );
+        log.error( stackTrace );
 
         ApiResponse<String> apiResponse = new ApiResponse<>();
         apiResponse.setSuccess( false );
@@ -64,6 +77,9 @@ public class CredentiaControllerAdvice {
 
         String stackTrace = convertStackTraceToString( e );
 
+        log.error( e.getMessage() );
+        log.error( stackTrace );
+
         ApiResponse<String> apiResponse = new ApiResponse<>();
         apiResponse.setSuccess( false );
         apiResponse.setMessage( e.getMessage() );
@@ -78,11 +94,50 @@ public class CredentiaControllerAdvice {
 
         String stackTrace = convertStackTraceToString( e );
 
+        log.error( e.getMessage() );
+        log.error( stackTrace );
+
         ApiResponse<String> apiResponse = new ApiResponse<>();
         apiResponse.setSuccess( false );
         apiResponse.setMessage( e.getMessage() );
         apiResponse.setErrorCode( stackTrace );
         return new ResponseEntity<>( apiResponse, status );
+    }
+
+    @ExceptionHandler( InvalidKeySpecException.class )
+    public ResponseEntity<ApiResponse<String>> handleInvalidKeySpecException( InvalidKeySpecException e ) {
+
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        String stackTrace = convertStackTraceToString( e );
+
+        log.error( e.getMessage() );
+        log.error( stackTrace );
+
+        ApiResponse<String> apiResponse = new ApiResponse<>();
+        apiResponse.setSuccess( false );
+        apiResponse.setMessage( e.getMessage() );
+        apiResponse.setErrorCode( stackTrace );
+        return new ResponseEntity<>( apiResponse, status );
+
+    }
+
+    @ExceptionHandler( NoSuchAlgorithmException.class )
+    public ResponseEntity<ApiResponse<String>> handleNoSuchAlgorithmException( NoSuchAlgorithmException e ) {
+
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        String stackTrace = convertStackTraceToString( e );
+
+        log.error( e.getMessage() );
+        log.error( stackTrace );
+
+        ApiResponse<String> apiResponse = new ApiResponse<>();
+        apiResponse.setSuccess( false );
+        apiResponse.setMessage( e.getMessage() );
+        apiResponse.setErrorCode( stackTrace );
+        return new ResponseEntity<>( apiResponse, status );
+
     }
 
 
@@ -93,6 +148,9 @@ public class CredentiaControllerAdvice {
 
         String stackTrace = convertStackTraceToString( e );
 
+        log.error( e.getMessage() );
+        log.error( stackTrace );
+
         ApiResponse<String> apiResponse = new ApiResponse<>();
         apiResponse.setSuccess( false );
         apiResponse.setMessage( e.getMessage() );
@@ -101,10 +159,14 @@ public class CredentiaControllerAdvice {
     }
 
     private String convertStackTraceToString( Exception e ) {
+
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter( stringWriter );
+
         e.printStackTrace( printWriter );
+
         return stringWriter.toString();
+
     }
 
 

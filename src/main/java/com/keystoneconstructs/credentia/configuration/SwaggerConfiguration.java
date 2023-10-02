@@ -17,14 +17,11 @@ public class SwaggerConfiguration {
 
         License license = new License().name( "Apache 2.0" ).url( "https://www.apache.org/licenses/LICENSE-2.0.html" );
 
-        Info info = new Info()
-                .title( "Credentia Backend API" )
-                .version( "0.0" )
-                .contact( contact )
-                .description( "This API exposes endpoints to manage credentia services." )
-                .license( license );
+        Info info = new Info().title( "Credentia Backend API" ).version( "0.0" ).contact( contact )
+                .description( "This API exposes endpoints to manage credentia services." ).license( license );
 
         return new OpenAPI().info( info );
+
     }
 
 }

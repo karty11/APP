@@ -35,11 +35,17 @@ public class UserEntity extends AuditFields {
     @Column( name = "user_group_id" )
     private String userGroupId;
 
-    @Column(name = "is_deleted")
+    @Column( name = "is_deleted" )
     private boolean deleted;
 
+    @Column( name = "encryption_key" )
+    private String salt;
+
+    @Column( name = "encrypted_key" )
+    private String encryptedPassword;
+
     @ManyToOne
-    @JoinColumn(name = "organization_id", nullable = false)
+    @JoinColumn( name = "organization_id", nullable = false )
     private OrganizationEntity organization;
 
     public UserEntity() {
@@ -126,38 +132,58 @@ public class UserEntity extends AuditFields {
         this.organization = organization;
     }
 
-    @Override public boolean equals( Object o ) {
-        if( this == o ) return true;
+    public String getSalt() {
+        return salt;
+    }
 
-        if( o == null || getClass() != o.getClass() ) return false;
+    public void setSalt( String salt ) {
+        this.salt = salt;
+    }
+
+    public String getEncryptedPassword() {
+        return encryptedPassword;
+    }
+
+    public void setEncryptedPassword( String encryptedPassword ) {
+        this.encryptedPassword = encryptedPassword;
+    }
+
+    @Override
+    public boolean equals( Object o ) {
+        
+        if( this == o ) {
+            return true;
+        }
+
+        if( o == null || getClass() != o.getClass() ) {
+            return false;
+        }
 
         UserEntity that = ( UserEntity ) o;
 
         return new EqualsBuilder().append( deleted, that.deleted ).append( id, that.id )
                 .append( firstName, that.firstName ).append( lastName, that.lastName ).append( initials, that.initials )
                 .append( role, that.role ).append( contactEntity, that.contactEntity ).append( email, that.email )
-                .append( userGroupId, that.userGroupId ).append( organization, that.organization ).isEquals();
+                .append( userGroupId, that.userGroupId ).append( salt, that.salt )
+                .append( encryptedPassword, that.encryptedPassword ).append( organization, that.organization )
+                .isEquals();
+
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return new HashCodeBuilder( 17, 37 ).append( id ).append( firstName ).append( lastName ).append( initials )
                 .append( role ).append( contactEntity ).append( email ).append( userGroupId ).append( deleted )
-                .append( organization ).toHashCode();
+                .append( salt ).append( encryptedPassword ).append( organization ).toHashCode();
     }
 
-    @Override public String toString() {
-        return "{" +
-                "id='" + id + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", initials='" + initials + '\'' +
-                ", role='" + role + '\'' +
-                ", contactEntity=" + contactEntity +
-                ", email='" + email + '\'' +
-                ", userGroupId='" + userGroupId + '\'' +
-                ", deleted=" + deleted +
-                ", organization=" + organization +
-                '}';
+    @Override
+    public String toString() {
+        return "{" + "id='" + id + '\'' + ", firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' +
+                ", initials='" + initials + '\'' + ", role='" + role + '\'' + ", contactEntity=" + contactEntity +
+                ", email='" + email + '\'' + ", userGroupId='" + userGroupId + '\'' + ", deleted=" + deleted +
+                ", salt='" + salt + '\'' + ", encryptedPassword='" + encryptedPassword + '\'' + ", organization=" +
+                organization + '}';
     }
 
 }

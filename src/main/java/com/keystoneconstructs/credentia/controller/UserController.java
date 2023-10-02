@@ -90,6 +90,38 @@ public class UserController {
     }
 
 
+    @Operation( summary = "API to update existing User account Password.",
+            description = "This API updates an existing User account password based on User Id." )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
+            @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
+    @PostMapping( "/resetPassword" )
+    public ResponseEntity<ApiResponse<UserResponse>> updateUserPassword( @RequestParam( name = "userId" ) String userId,
+            @RequestParam( name = "oldPassword" ) String oldPassword,
+            @RequestParam( name = "newPassword" ) String newPassword ) {
+
+        ApiResponse<UserResponse> response = new ApiResponse<>();
+        try {
+
+            response.setSuccess( true );
+            response.setMessage( "Successfully updated User Password." );
+            response.setResponse( userService.updatePassword( userId, oldPassword, newPassword ) );
+
+            return new ResponseEntity<>( response, HttpStatus.OK );
+
+        } catch( InvalidInputException | AppException | EntityNotFoundException e ) {
+
+            response.setSuccess( false );
+            response.setMessage( e.getMessage() );
+            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
+
+            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
+
+        }
+
+    }
+
+
     @Operation( summary = "API to get existing User by Id.",
             description = "This API retrieves an existing User based on User Id." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {

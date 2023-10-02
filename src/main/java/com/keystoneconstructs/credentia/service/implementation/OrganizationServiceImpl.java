@@ -28,7 +28,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     OrganizationRepository organizationRepository;
 
     @Override
-    public OrganizationResponse createOrgainzation( OrganizationRequest organizationRequest ) throws InvalidInputException, AppException {
+    public OrganizationResponse createOrganization( OrganizationRequest organizationRequest ) throws InvalidInputException, AppException {
 
         if( organizationRequest == null || StringUtils.isEmpty( organizationRequest.getName() ) || StringUtils.isEmpty(
                 organizationRequest.getOrgCode() ) ) {
@@ -171,9 +171,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
 
-    /***************************************************************
-     ******************* Private Methods ***************************
-     ***************************************************************/
+    /*--------------------------------------------------------
+     ------------------ Private Methods ----------------------
+     --------------------------------------------------------*/
 
 
 }

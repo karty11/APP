@@ -1,5 +1,6 @@
 package com.keystoneconstructs.credentia.service.implementation;
 
+import com.keystoneconstructs.credentia.Utils.EncryptionUtils;
 import com.keystoneconstructs.credentia.constant.Constants;
 import com.keystoneconstructs.credentia.constant.Role;
 import com.keystoneconstructs.credentia.converters.Converter;
@@ -18,6 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,12 +38,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse createUser( UserRequest userRequest ) throws InvalidInputException, AppException {
 
-        if( userRequest == null || StringUtils.isEmpty( userRequest.getRole() ) || StringUtils.isEmpty(
-                userRequest.getFirstName() ) || StringUtils.isEmpty(
-                userRequest.getLastName() ) || userRequest.getOrganizationRequest() == null || StringUtils.isEmpty(
-                userRequest.getOrganizationRequest().getOrganizationName() ) ) {
+        if( userRequest == null || StringUtils.isEmpty( userRequest.getRole() ) ||
+                StringUtils.isEmpty( userRequest.getFirstName() ) || StringUtils.isEmpty( userRequest.getLastName() ) ||
+                userRequest.getOrganizationRequest() == null ||
+                StringUtils.isEmpty( userRequest.getOrganizationRequest().getOrganizationName() ) ||
+                StringUtils.isEmpty( userRequest.getPassword() ) ) {
+
             log.error( "Invalid Inputs provides. Please check User Request Body." );
             throw new InvalidInputException( "Invalid Inputs provides. Please check User Request Body." );
+
         }
 
         Optional<UserEntity> user = userRepository.findByEmailIgnoreCase( userRequest.getEmail() );
@@ -54,9 +60,9 @@ public class UserServiceImpl implements UserService {
 
         UserEntity userEntity = new UserEntity();
 
-//        OrganizationEntity organization = organizationRepository.findById( userRequest.getOrganizationId() )
-//                .orElseThrow( () -> new EntityNotFoundException(
-//                        "Organization with id " + userRequest.getOrganizationId() + " was not found." ) );
+        //        OrganizationEntity organization = organizationRepository.findById( userRequest.getOrganizationId() )
+        //                .orElseThrow( () -> new EntityNotFoundException(
+        //                        "Organization with id " + userRequest.getOrganizationId() + " was not found." ) );
 
         Optional<OrganizationEntity> organization = organizationRepository.findByNameIgnoreCase(
                 userRequest.getOrganizationRequest().getOrganizationName() );
@@ -98,8 +104,21 @@ public class UserServiceImpl implements UserService {
         }
 
         try {
+
+            userEntity.setSalt( EncryptionUtils.getNewSalt() );
+            userEntity.setEncryptedPassword(
+                    EncryptionUtils.getEncryptedPassword( userRequest.getPassword(), userEntity.getSalt() ) );
+
+        } catch( NoSuchAlgorithmException | InvalidKeySpecException e ) {
+            log.error( e.getMessage() );
+            throw new AppException( e.getMessage() );
+        }
+
+        try {
+
             log.info( "User Created with Id -> " + userEntity.getId() );
             return Converter.convertUserEntityToResponse( userRepository.save( userEntity ) );
+
         } catch( Exception e ) {
             log.error( "Failed to add new User." );
             throw new AppException( "Failed to add new User." );
@@ -109,7 +128,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserResponse updateUser( UserRequest userRequest, String userId ) throws InvalidInputException, EntityNotFoundException, AppException {
+    public UserResponse updateUser( UserRequest userRequest,
+            String userId ) throws InvalidInputException, EntityNotFoundException, AppException {
 
         if( userRequest == null || StringUtils.isEmpty( userId ) ) {
             log.error( "Invalid Inputs provides. Please check User Request Body and User Id." );
@@ -144,8 +164,49 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public UserResponse updatePassword( String userId, String oldPassword,
+            String newPassword ) throws InvalidInputException, EntityNotFoundException, AppException {
 
-    @Override public UserResponse findUserById( String userId ) throws InvalidInputException, EntityNotFoundException {
+        if( StringUtils.isEmpty( userId ) || StringUtils.isEmpty( oldPassword ) ||
+                StringUtils.isEmpty( newPassword ) ) {
+            log.error( "Invalid inputs. Please verify the input fields." );
+            throw new InvalidInputException( "Invalid inputs. Please verify the input fields." );
+        }
+
+        Optional<UserEntity> user = userRepository.findById( userId );
+
+        if( user.isEmpty() ) {
+            log.error( "User with id " + userId + " was not found." );
+            throw new EntityNotFoundException( "User with id " + userId + " was not found." );
+        }
+
+        UserEntity userEntity = user.get();
+
+        try {
+
+            if( !userEntity.getEncryptedPassword()
+                    .equals( EncryptionUtils.getEncryptedPassword( oldPassword, userEntity.getSalt() ) ) ) {
+                log.error( "Invalid Current Password entered." );
+                throw new InvalidInputException( "Invalid Current Password entered." );
+            }
+
+            userEntity.setSalt( EncryptionUtils.getNewSalt() );
+            userEntity.setEncryptedPassword(
+                    EncryptionUtils.getEncryptedPassword( newPassword, userEntity.getSalt() ) );
+
+            log.info( "Successfully updated Password for User with id " + userId + "." );
+
+            return Converter.convertUserEntityToResponse( userRepository.save( userEntity ) );
+
+        } catch( Exception e ) {
+            throw new AppException( e.getMessage() );
+        }
+
+    }
+
+    @Override
+    public UserResponse findUserById( String userId ) throws InvalidInputException, EntityNotFoundException {
 
         if( StringUtils.isEmpty( userId ) ) {
             log.error( "User Id cannot be empty or null." );
@@ -185,7 +246,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<UserResponse> findAllUsersByUserGroupId( String userGroupId ) throws InvalidInputException, EntityNotFoundException {
+    public List<UserResponse> findAllUsersByUserGroupId(
+            String userGroupId ) throws InvalidInputException, EntityNotFoundException {
 
         if( StringUtils.isEmpty( userGroupId ) ) {
             log.error( "User Group Id cannot be empty or null." );
@@ -205,7 +267,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<UserResponse> findAllUsersByOrganizationId( String orgId ) throws InvalidInputException, EntityNotFoundException {
+    public List<UserResponse> findAllUsersByOrganizationId(
+            String orgId ) throws InvalidInputException, EntityNotFoundException {
 
         if( StringUtils.isEmpty( orgId ) ) {
             log.error( "Organization Id cannot be empty or null." );
@@ -257,25 +320,24 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    /***************************************************************
-     ******************* Private Methods ***************************
-     ***************************************************************/
+    /*--------------------------------------------------------
+     ------------------ Private Methods ----------------------
+     --------------------------------------------------------*/
 
     /**
      * This method verifies and supplies User Request fields to User Entity.
-     *
-     * @param userEntity
-     * @param userRequest
+     * @param userEntity - User Entity object
+     * @param userRequest - User Request object
      */
     private void verifyUpdateUserEntity( UserEntity userEntity, UserRequest userRequest ) {
 
-        if( StringUtils.isNotEmpty( userRequest.getFirstName() ) && !userEntity.getFirstName()
-                .equals( userRequest.getFirstName() ) ) {
+        if( StringUtils.isNotEmpty( userRequest.getFirstName() ) &&
+                !userEntity.getFirstName().equals( userRequest.getFirstName() ) ) {
             userEntity.setFirstName( userRequest.getFirstName() );
         }
 
-        if( StringUtils.isNotEmpty( userRequest.getLastName() ) && !userEntity.getLastName()
-                .equals( userRequest.getLastName() ) ) {
+        if( StringUtils.isNotEmpty( userRequest.getLastName() ) &&
+                !userEntity.getLastName().equals( userRequest.getLastName() ) ) {
             userEntity.setLastName( userRequest.getLastName() );
         }
 
@@ -283,13 +345,13 @@ public class UserServiceImpl implements UserService {
             userEntity.setRole( userRequest.getRole() );
         }
 
-        if( StringUtils.isEmpty( userEntity.getInitials() ) || ( StringUtils.isNotEmpty(
-                userRequest.getInitials() ) && !userEntity.getInitials().equals( userRequest.getInitials() ) ) ) {
+        if( StringUtils.isEmpty( userEntity.getInitials() ) || ( StringUtils.isNotEmpty( userRequest.getInitials() ) &&
+                !userEntity.getInitials().equals( userRequest.getInitials() ) ) ) {
             userEntity.setInitials( userRequest.getInitials() );
         }
 
-        if( StringUtils.isEmpty( userEntity.getEmail() ) || ( StringUtils.isNotEmpty(
-                userRequest.getEmail() ) && !userEntity.getEmail().equals( userRequest.getEmail() ) ) ) {
+        if( StringUtils.isEmpty( userEntity.getEmail() ) || ( StringUtils.isNotEmpty( userRequest.getEmail() ) &&
+                !userEntity.getEmail().equals( userRequest.getEmail() ) ) ) {
             userEntity.setEmail( userRequest.getEmail() );
         }
 
