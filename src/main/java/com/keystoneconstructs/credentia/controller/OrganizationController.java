@@ -34,6 +34,7 @@ public class OrganizationController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = OrganizationResponse.class ),
                     mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PutMapping( "/add" )
     public ResponseEntity<ApiResponse<OrganizationResponse>> createOrganization(
             @RequestBody OrganizationRequest organizationRequest ) {
@@ -65,6 +66,7 @@ public class OrganizationController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = OrganizationResponse.class ),
                     mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PostMapping( "/edit" )
     public ResponseEntity<ApiResponse<OrganizationResponse>> updateOrganization(
             @RequestParam( name = "orgId" ) String organizationId,
@@ -97,6 +99,7 @@ public class OrganizationController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = OrganizationResponse.class ),
                     mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getById" )
     public ResponseEntity<ApiResponse<OrganizationResponse>> getOrganizationById(
             @RequestParam( name = "orgId" ) String orgId ) {
@@ -128,6 +131,7 @@ public class OrganizationController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = OrganizationResponse.class ),
                     mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getAll" )
     public ResponseEntity<ApiResponse<List<OrganizationResponse>>> getAllOrganizations() {
 
@@ -145,9 +149,9 @@ public class OrganizationController {
             description = "This API deletes an existing Organization based on Organization Id." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = String.class ), mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PostMapping( "/deleteById" )
-    public ResponseEntity<ApiResponse<String>> deleteById(
-            @RequestParam( name = "orgId" ) String orgId ) {
+    public ResponseEntity<ApiResponse<String>> deleteById( @RequestParam( name = "orgId" ) String orgId ) {
 
         ApiResponse<String> response = new ApiResponse<>();
         try {

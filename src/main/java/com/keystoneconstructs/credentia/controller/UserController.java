@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@Tag( name = "User Controller", description = "Controller for all User API endpoints.")
+@Tag( name = "User Controller", description = "Controller for all User API endpoints." )
 @RequestMapping( "api/v1/user" )
 public class UserController {
 
@@ -33,6 +33,7 @@ public class UserController {
             description = "This API creates a new User based on User Request." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PutMapping( "/add" )
     public ResponseEntity<ApiResponse<UserResponse>> createUser( @RequestBody UserRequest userRequest ) {
 
@@ -62,9 +63,10 @@ public class UserController {
             description = "This API updates an existing User based on User Id and User Request." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PostMapping( "/edit" )
-    public ResponseEntity<ApiResponse<UserResponse>> updateUser(
-            @RequestParam( name = "userId" ) String userId, @RequestBody UserRequest userRequest ) {
+    public ResponseEntity<ApiResponse<UserResponse>> updateUser( @RequestParam( name = "userId" ) String userId,
+            @RequestBody UserRequest userRequest ) {
 
         ApiResponse<UserResponse> response = new ApiResponse<>();
         try {
@@ -92,6 +94,7 @@ public class UserController {
             description = "This API retrieves an existing User based on User Id." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getById" )
     public ResponseEntity<ApiResponse<UserResponse>> getUserById( @RequestParam( name = "userId" ) String userId ) {
 
@@ -121,6 +124,7 @@ public class UserController {
             description = "This API retrieves an existing User based on User Email." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getByEmail" )
     public ResponseEntity<ApiResponse<UserResponse>> getUserByEmail( @RequestParam( name = "email" ) String email ) {
 
@@ -150,6 +154,7 @@ public class UserController {
             description = "This API retrieves all existing Users based on User Group Id." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getAllByGroupId" )
     public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsersByGroupId(
             @RequestParam( name = "groupId" ) String groupId ) {
@@ -180,6 +185,7 @@ public class UserController {
             description = "This API retrieves all existing Users based on Organization Id." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getAllByOrg" )
     public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsersByOrg(
             @RequestParam( name = "orgId" ) String orgId ) {
@@ -210,9 +216,9 @@ public class UserController {
             description = "This API deletes an existing User based on User Id." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = String.class ), mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PostMapping( "/deleteById" )
-    public ResponseEntity<ApiResponse<String>> deleteById(
-            @RequestParam( name = "userId" ) String userId ) {
+    public ResponseEntity<ApiResponse<String>> deleteById( @RequestParam( name = "userId" ) String userId ) {
 
         ApiResponse<String> response = new ApiResponse<>();
         try {

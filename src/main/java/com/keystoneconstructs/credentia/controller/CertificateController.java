@@ -32,6 +32,7 @@ public class CertificateController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = CertificateResponse.class ),
                     mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PutMapping( "/add" )
     public ResponseEntity<ApiResponse<CertificateResponse>> createCertificate(
             @RequestBody CertificateRequest certificateRequest ) {
@@ -63,6 +64,7 @@ public class CertificateController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = CertificateResponse.class ),
                     mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PostMapping( "/edit" )
     public ResponseEntity<ApiResponse<CertificateResponse>> updateCertificate(
             @RequestParam( name = "certificateId" ) String certificateId,
@@ -95,6 +97,7 @@ public class CertificateController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = CertificateResponse.class ),
                     mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getById" )
     public ResponseEntity<ApiResponse<CertificateResponse>> getCertificateById(
             @RequestParam( name = "certificateId" ) String certificateId ) {
@@ -126,6 +129,7 @@ public class CertificateController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = CertificateResponse.class ),
                     mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getAll" )
     public ResponseEntity<ApiResponse<List<CertificateResponse>>> getAllCertificatesByOrganization(
             @RequestParam( name = "orgId" ) String orgId ) {
@@ -156,6 +160,7 @@ public class CertificateController {
             description = "This API deletes an existing Certificate based on Certificate Id." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = String.class ), mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PostMapping( "/deleteById" )
     public ResponseEntity<ApiResponse<String>> deleteById(
             @RequestParam( name = "certificateId" ) String certificateId ) {

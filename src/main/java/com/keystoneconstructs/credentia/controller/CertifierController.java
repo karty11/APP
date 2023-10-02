@@ -31,6 +31,7 @@ public class CertifierController {
             description = "This API certifies Users based on Certifier Request." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = CertifierResponse.class ), mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PutMapping( "/certify" )
     public ResponseEntity<ApiResponse<List<CertifierResponse>>> certifyUsers(
             @RequestBody CertifierRequest certifierRequest ) {
@@ -62,6 +63,7 @@ public class CertifierController {
             description = "This API retrieves an existing Certifier based on Certifier Id." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = CertifierResponse.class ), mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getById" )
     public ResponseEntity<ApiResponse<CertifierResponse>> getCertifierById(
             @RequestParam( name = "certifierId" ) String certifierId ) {
@@ -92,8 +94,8 @@ public class CertifierController {
     @Operation( summary = "API to get all existing Certifiers by Recipient Mail.",
             description = "This API retrieves all existing Certifiers based on Recipient Email." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
-            @Content( schema = @Schema( implementation = CertifierResponse.class ),
-                    mediaType = "application/json" ) } )
+            @Content( schema = @Schema( implementation = CertifierResponse.class ), mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getByEmail" )
     public ResponseEntity<ApiResponse<List<CertifierResponse>>> getCertifierByEmail(
             @RequestParam( name = "recipientEmail" ) String recipientEmail ) {
@@ -124,8 +126,8 @@ public class CertifierController {
     @Operation( summary = "API to get all existing Certifiers by Certificate Id.",
             description = "This API retrieves all existing Certifiers based on Certificate Id." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
-            @Content( schema = @Schema( implementation = CertifierResponse.class ),
-                    mediaType = "application/json" ) } )
+            @Content( schema = @Schema( implementation = CertifierResponse.class ), mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getByCertificate" )
     public ResponseEntity<ApiResponse<List<CertifierResponse>>> getCertifierByCertificateId(
             @RequestParam( name = "certificateId" ) String certificateId ) {
@@ -155,8 +157,8 @@ public class CertifierController {
     @Operation( summary = "API to get all existing Certifiers by Organization Name.",
             description = "This API retrieves all existing Certifiers based on Organization Name." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
-            @Content( schema = @Schema( implementation = CertifierResponse.class ),
-                    mediaType = "application/json" ) } )
+            @Content( schema = @Schema( implementation = CertifierResponse.class ), mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getByOrganization" )
     public ResponseEntity<ApiResponse<List<CertifierResponse>>> getCertifierByOrganization(
             @RequestParam( name = "organization" ) String organization ) {
@@ -188,9 +190,9 @@ public class CertifierController {
             description = "This API deletes an existing Certifier based on Certifier Id." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = String.class ), mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PostMapping( "/deleteById" )
-    public ResponseEntity<ApiResponse<String>> deleteById(
-            @RequestParam( name = "certifierId" ) String certifierId ) {
+    public ResponseEntity<ApiResponse<String>> deleteById( @RequestParam( name = "certifierId" ) String certifierId ) {
 
         ApiResponse<String> response = new ApiResponse<>();
         try {
