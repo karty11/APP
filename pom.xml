@@ -29,16 +29,27 @@
 
     <profiles>
 
-        <profile>
-            <id>dev</id>
-            <activation>
-                <property>
-                    <name>env</name>
-                    <value>dev</value>
-                </property>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
+		<profile>
+			<id>heroku</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>heroku</value>
+				</property>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+
+		<profile>
+			<id>dev</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>dev</value>
+				</property>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
 
         <profile>
             <id>local</id>
