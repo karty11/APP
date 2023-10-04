@@ -32,7 +32,7 @@ public class CertificateEntity extends AuditFields {
     @Column(name = "website")
     private String website;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "organization_id", nullable = false)
     private OrganizationEntity organization;
 
