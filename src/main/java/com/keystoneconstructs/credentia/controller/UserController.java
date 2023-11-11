@@ -17,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -35,26 +34,15 @@ public class UserController {
             @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PutMapping( "/add" )
-    public ResponseEntity<ApiResponse<UserResponse>> createUser( @RequestBody UserRequest userRequest ) {
+    public ResponseEntity<ApiResponse<UserResponse>> createUser(
+            @RequestBody UserRequest userRequest ) throws InvalidInputException, AppException {
 
         ApiResponse<UserResponse> response = new ApiResponse<>();
-        try {
+        response.setSuccess( true );
+        response.setMessage( "Successfully created new User." );
+        response.setResponse( userService.createUser( userRequest ) );
 
-            response.setSuccess( true );
-            response.setMessage( "Successfully created new User." );
-            response.setResponse( userService.createUser( userRequest ) );
-
-            return new ResponseEntity<>( response, HttpStatus.CREATED );
-
-        } catch( InvalidInputException | AppException e ) {
-
-            response.setSuccess( false );
-            response.setMessage( e.getMessage() );
-            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
-
-            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
-
-        }
+        return new ResponseEntity<>( response, HttpStatus.CREATED );
 
     }
 
@@ -66,26 +54,14 @@ public class UserController {
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PostMapping( "/edit" )
     public ResponseEntity<ApiResponse<UserResponse>> updateUser( @RequestParam( name = "userId" ) String userId,
-            @RequestBody UserRequest userRequest ) {
+            @RequestBody UserRequest userRequest ) throws InvalidInputException, AppException, EntityNotFoundException {
 
         ApiResponse<UserResponse> response = new ApiResponse<>();
-        try {
+        response.setSuccess( true );
+        response.setMessage( "Successfully updated User." );
+        response.setResponse( userService.updateUser( userRequest, userId ) );
 
-            response.setSuccess( true );
-            response.setMessage( "Successfully updated User." );
-            response.setResponse( userService.updateUser( userRequest, userId ) );
-
-            return new ResponseEntity<>( response, HttpStatus.OK );
-
-        } catch( InvalidInputException | AppException | EntityNotFoundException e ) {
-
-            response.setSuccess( false );
-            response.setMessage( e.getMessage() );
-            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
-
-            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
-
-        }
+        return new ResponseEntity<>( response, HttpStatus.OK );
 
     }
 
@@ -128,26 +104,16 @@ public class UserController {
             @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getById" )
-    public ResponseEntity<ApiResponse<UserResponse>> getUserById( @RequestParam( name = "userId" ) String userId ) {
+    public ResponseEntity<ApiResponse<UserResponse>> getUserById(
+            @RequestParam( name = "userId" ) String userId ) throws InvalidInputException, EntityNotFoundException {
 
         ApiResponse<UserResponse> response = new ApiResponse<>();
-        try {
 
-            response.setSuccess( true );
-            response.setMessage( "Successfully retrieved User." );
-            response.setResponse( userService.findUserById( userId ) );
+        response.setSuccess( true );
+        response.setMessage( "Successfully retrieved User." );
+        response.setResponse( userService.findUserById( userId ) );
 
-            return new ResponseEntity<>( response, HttpStatus.OK );
-
-        } catch( InvalidInputException | EntityNotFoundException e ) {
-
-            response.setSuccess( false );
-            response.setMessage( e.getMessage() );
-            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
-
-            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
-
-        }
+        return new ResponseEntity<>( response, HttpStatus.OK );
 
     }
 
@@ -158,26 +124,15 @@ public class UserController {
             @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getByEmail" )
-    public ResponseEntity<ApiResponse<UserResponse>> getUserByEmail( @RequestParam( name = "email" ) String email ) {
+    public ResponseEntity<ApiResponse<UserResponse>> getUserByEmail(
+            @RequestParam( name = "email" ) String email ) throws InvalidInputException, EntityNotFoundException {
 
         ApiResponse<UserResponse> response = new ApiResponse<>();
-        try {
+        response.setSuccess( true );
+        response.setMessage( "Successfully retrieved User." );
+        response.setResponse( userService.findUserByEmail( email ) );
 
-            response.setSuccess( true );
-            response.setMessage( "Successfully retrieved User." );
-            response.setResponse( userService.findUserByEmail( email ) );
-
-            return new ResponseEntity<>( response, HttpStatus.OK );
-
-        } catch( InvalidInputException | EntityNotFoundException e ) {
-
-            response.setSuccess( false );
-            response.setMessage( e.getMessage() );
-            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
-
-            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
-
-        }
+        return new ResponseEntity<>( response, HttpStatus.OK );
 
     }
 
@@ -189,27 +144,14 @@ public class UserController {
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getAllByGroupId" )
     public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsersByGroupId(
-            @RequestParam( name = "groupId" ) String groupId ) {
+            @RequestParam( name = "groupId" ) String groupId ) throws InvalidInputException, EntityNotFoundException {
 
         ApiResponse<List<UserResponse>> response = new ApiResponse<>();
-        try {
+        response.setSuccess( true );
+        response.setMessage( "Successfully retrieved all Users." );
+        response.setResponse( userService.findAllUsersByUserGroupId( groupId ) );
 
-            response.setSuccess( true );
-            response.setMessage( "Successfully retrieved all Users." );
-            response.setResponse( userService.findAllUsersByUserGroupId( groupId ) );
-
-            return new ResponseEntity<>( response, HttpStatus.OK );
-
-        } catch( InvalidInputException | EntityNotFoundException e ) {
-
-            response.setSuccess( false );
-            response.setMessage( e.getMessage() );
-            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
-
-            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
-
-        }
-
+        return new ResponseEntity<>( response, HttpStatus.OK );
     }
 
 
@@ -220,26 +162,14 @@ public class UserController {
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getAllByOrg" )
     public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsersByOrg(
-            @RequestParam( name = "orgId" ) String orgId ) {
+            @RequestParam( name = "orgId" ) String orgId ) throws InvalidInputException, EntityNotFoundException {
 
         ApiResponse<List<UserResponse>> response = new ApiResponse<>();
-        try {
+        response.setSuccess( true );
+        response.setMessage( "Successfully retrieved all Users." );
+        response.setResponse( userService.findAllUsersByOrganizationId( orgId ) );
 
-            response.setSuccess( true );
-            response.setMessage( "Successfully retrieved all Users." );
-            response.setResponse( userService.findAllUsersByOrganizationId( orgId ) );
-
-            return new ResponseEntity<>( response, HttpStatus.OK );
-
-        } catch( InvalidInputException | EntityNotFoundException e ) {
-
-            response.setSuccess( false );
-            response.setMessage( e.getMessage() );
-            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
-
-            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
-
-        }
+        return new ResponseEntity<>( response, HttpStatus.OK );
 
     }
 
@@ -250,27 +180,15 @@ public class UserController {
             @Content( schema = @Schema( implementation = String.class ), mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PostMapping( "/deleteById" )
-    public ResponseEntity<ApiResponse<String>> deleteById( @RequestParam( name = "userId" ) String userId ) {
+    public ResponseEntity<ApiResponse<String>> deleteById( @RequestParam( name = "userId" )
+    String userId ) throws InvalidInputException, AppException, EntityNotFoundException {
 
         ApiResponse<String> response = new ApiResponse<>();
-        try {
+        response.setSuccess( true );
+        response.setMessage( "Successfully deleted User." );
+        response.setResponse( userService.deleteUserById( userId ) );
 
-            response.setSuccess( true );
-            response.setMessage( "Successfully deleted User." );
-            response.setResponse( userService.deleteUserById( userId ) );
-
-            return new ResponseEntity<>( response, HttpStatus.OK );
-
-        } catch( InvalidInputException | AppException | EntityNotFoundException e ) {
-
-            response.setSuccess( false );
-            response.setMessage( e.getMessage() );
-            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
-
-            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
-
-        }
-
+        return new ResponseEntity<>( response, HttpStatus.OK );
     }
 
 

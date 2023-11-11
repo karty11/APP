@@ -3,7 +3,9 @@ package com.keystoneconstructs.credentia.controller;
 import com.keystoneconstructs.credentia.exception.AppException;
 import com.keystoneconstructs.credentia.exception.EntityNotFoundException;
 import com.keystoneconstructs.credentia.exception.InvalidInputException;
-import com.keystoneconstructs.credentia.model.*;
+import com.keystoneconstructs.credentia.model.ApiResponse;
+import com.keystoneconstructs.credentia.model.CertifierRequest;
+import com.keystoneconstructs.credentia.model.CertifierResponse;
 import com.keystoneconstructs.credentia.service.CertifierService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -33,28 +34,15 @@ public class CertifierController {
             @Content( schema = @Schema( implementation = CertifierResponse.class ), mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PutMapping( "/certify" )
-    public ResponseEntity<ApiResponse<List<CertifierResponse>>> certifyUsers(
-            @RequestBody CertifierRequest certifierRequest ) {
+    public ResponseEntity<ApiResponse<List<CertifierResponse>>> certifyUsers( @RequestBody
+    CertifierRequest certifierRequest ) throws InvalidInputException, AppException, EntityNotFoundException {
 
         ApiResponse<List<CertifierResponse>> response = new ApiResponse<>();
+        response.setSuccess( true );
+        response.setMessage( "Successfully certified Users." );
+        response.setResponse( certifierService.certifyUsers( certifierRequest ) );
 
-        try {
-
-            response.setSuccess( true );
-            response.setMessage( "Successfully certified Users." );
-            response.setResponse( certifierService.certifyUsers( certifierRequest ) );
-
-            return new ResponseEntity<>( response, HttpStatus.CREATED );
-
-        } catch( InvalidInputException | EntityNotFoundException | AppException e ) {
-
-            response.setSuccess( false );
-            response.setMessage( e.getMessage() );
-            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
-
-            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
-
-        }
+        return new ResponseEntity<>( response, HttpStatus.CREATED );
 
     }
 
@@ -65,28 +53,15 @@ public class CertifierController {
             @Content( schema = @Schema( implementation = CertifierResponse.class ), mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getById" )
-    public ResponseEntity<ApiResponse<CertifierResponse>> getCertifierById(
-            @RequestParam( name = "certifierId" ) String certifierId ) {
+    public ResponseEntity<ApiResponse<CertifierResponse>> getCertifierById( @RequestParam( name = "certifierId" )
+    String certifierId ) throws InvalidInputException, EntityNotFoundException {
 
         ApiResponse<CertifierResponse> response = new ApiResponse<>();
+        response.setSuccess( true );
+        response.setMessage( "Successfully retrieved Certifier." );
+        response.setResponse( certifierService.getCertifierById( certifierId ) );
 
-        try {
-
-            response.setSuccess( true );
-            response.setMessage( "Successfully retrieved Certifier." );
-            response.setResponse( certifierService.getCertifierById( certifierId ) );
-
-            return new ResponseEntity<>( response, HttpStatus.OK );
-
-        } catch( InvalidInputException | EntityNotFoundException e ) {
-
-            response.setSuccess( false );
-            response.setMessage( e.getMessage() );
-            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
-
-            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
-
-        }
+        return new ResponseEntity<>( response, HttpStatus.OK );
 
     }
 
@@ -98,27 +73,14 @@ public class CertifierController {
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getByEmail" )
     public ResponseEntity<ApiResponse<List<CertifierResponse>>> getCertifierByEmail(
-            @RequestParam( name = "recipientEmail" ) String recipientEmail ) {
+            @RequestParam( name = "recipientEmail" ) String recipientEmail ) throws InvalidInputException {
 
         ApiResponse<List<CertifierResponse>> response = new ApiResponse<>();
+        response.setSuccess( true );
+        response.setMessage( "Successfully retrieved Certifiers." );
+        response.setResponse( certifierService.getCertifierByEmail( recipientEmail ) );
 
-        try {
-
-            response.setSuccess( true );
-            response.setMessage( "Successfully retrieved Certifiers." );
-            response.setResponse( certifierService.getCertifierByEmail( recipientEmail ) );
-
-            return new ResponseEntity<>( response, HttpStatus.OK );
-
-        } catch( InvalidInputException e ) {
-
-            response.setSuccess( false );
-            response.setMessage( e.getMessage() );
-            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
-
-            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
-
-        }
+        return new ResponseEntity<>( response, HttpStatus.OK );
 
     }
 
@@ -130,27 +92,15 @@ public class CertifierController {
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getByCertificate" )
     public ResponseEntity<ApiResponse<List<CertifierResponse>>> getCertifierByCertificateId(
-            @RequestParam( name = "certificateId" ) String certificateId ) {
+            @RequestParam( name = "certificateId" )
+            String certificateId ) throws InvalidInputException, EntityNotFoundException {
 
         ApiResponse<List<CertifierResponse>> response = new ApiResponse<>();
+        response.setSuccess( true );
+        response.setMessage( "Successfully retrieved Certifiers." );
+        response.setResponse( certifierService.getAllByCertificateId( certificateId ) );
 
-        try {
-
-            response.setSuccess( true );
-            response.setMessage( "Successfully retrieved Certifiers." );
-            response.setResponse( certifierService.getAllByCertificateId( certificateId ) );
-
-            return new ResponseEntity<>( response, HttpStatus.OK );
-
-        } catch( InvalidInputException | EntityNotFoundException e ) {
-
-            response.setSuccess( false );
-            response.setMessage( e.getMessage() );
-            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
-
-            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
-
-        }
+        return new ResponseEntity<>( response, HttpStatus.OK );
 
     }
 
@@ -161,27 +111,15 @@ public class CertifierController {
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getByOrganization" )
     public ResponseEntity<ApiResponse<List<CertifierResponse>>> getCertifierByOrganization(
-            @RequestParam( name = "organization" ) String organization ) {
+            @RequestParam( name = "organization" )
+            String organization ) throws InvalidInputException, EntityNotFoundException {
 
         ApiResponse<List<CertifierResponse>> response = new ApiResponse<>();
+        response.setSuccess( true );
+        response.setMessage( "Successfully retrieved Certifiers." );
+        response.setResponse( certifierService.getAllByOraganization( organization ) );
 
-        try {
-
-            response.setSuccess( true );
-            response.setMessage( "Successfully retrieved Certifiers." );
-            response.setResponse( certifierService.getAllByOraganization( organization ) );
-
-            return new ResponseEntity<>( response, HttpStatus.OK );
-
-        } catch( InvalidInputException | EntityNotFoundException e ) {
-
-            response.setSuccess( false );
-            response.setMessage( e.getMessage() );
-            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
-
-            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
-
-        }
+        return new ResponseEntity<>( response, HttpStatus.OK );
 
     }
 
@@ -192,26 +130,15 @@ public class CertifierController {
             @Content( schema = @Schema( implementation = String.class ), mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PostMapping( "/deleteById" )
-    public ResponseEntity<ApiResponse<String>> deleteById( @RequestParam( name = "certifierId" ) String certifierId ) {
+    public ResponseEntity<ApiResponse<String>> deleteById( @RequestParam( name = "certifierId" )
+    String certifierId ) throws InvalidInputException, AppException, EntityNotFoundException {
 
         ApiResponse<String> response = new ApiResponse<>();
-        try {
+        response.setSuccess( true );
+        response.setMessage( "Successfully deleted Certificate." );
+        response.setResponse( certifierService.deleteCertifierById( certifierId ) );
 
-            response.setSuccess( true );
-            response.setMessage( "Successfully deleted Certificate." );
-            response.setResponse( certifierService.deleteCertifierById( certifierId ) );
-
-            return new ResponseEntity<>( response, HttpStatus.OK );
-
-        } catch( InvalidInputException | AppException | EntityNotFoundException e ) {
-
-            response.setSuccess( false );
-            response.setMessage( e.getMessage() );
-            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
-
-            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
-
-        }
+        return new ResponseEntity<>( response, HttpStatus.OK );
 
     }
 

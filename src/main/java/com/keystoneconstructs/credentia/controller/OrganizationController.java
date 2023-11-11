@@ -3,7 +3,9 @@ package com.keystoneconstructs.credentia.controller;
 import com.keystoneconstructs.credentia.exception.AppException;
 import com.keystoneconstructs.credentia.exception.EntityNotFoundException;
 import com.keystoneconstructs.credentia.exception.InvalidInputException;
-import com.keystoneconstructs.credentia.model.*;
+import com.keystoneconstructs.credentia.model.ApiResponse;
+import com.keystoneconstructs.credentia.model.OrganizationRequest;
+import com.keystoneconstructs.credentia.model.OrganizationResponse;
 import com.keystoneconstructs.credentia.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -35,26 +36,14 @@ public class OrganizationController {
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PutMapping( "/add" )
     public ResponseEntity<ApiResponse<OrganizationResponse>> createOrganization(
-            @RequestBody OrganizationRequest organizationRequest ) {
+            @RequestBody OrganizationRequest organizationRequest ) throws InvalidInputException, AppException {
 
         ApiResponse<OrganizationResponse> response = new ApiResponse<>();
-        try {
+        response.setSuccess( true );
+        response.setMessage( "Successfully created new Organization." );
+        response.setResponse( organizationService.createOrgainzation( organizationRequest ) );
 
-            response.setSuccess( true );
-            response.setMessage( "Successfully created new Organization." );
-            response.setResponse( organizationService.createOrganization( organizationRequest ) );
-
-            return new ResponseEntity<>( response, HttpStatus.CREATED );
-
-        } catch( InvalidInputException | AppException e ) {
-
-            response.setSuccess( false );
-            response.setMessage( e.getMessage() );
-            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
-
-            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
-
-        }
+        return new ResponseEntity<>( response, HttpStatus.CREATED );
 
     }
 
@@ -67,27 +56,15 @@ public class OrganizationController {
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PostMapping( "/edit" )
     public ResponseEntity<ApiResponse<OrganizationResponse>> updateOrganization(
-            @RequestParam( name = "orgId" ) String organizationId,
-            @RequestBody OrganizationRequest organizationRequest ) {
+            @RequestParam( name = "orgId" ) String organizationId, @RequestBody
+    OrganizationRequest organizationRequest ) throws InvalidInputException, AppException, EntityNotFoundException {
 
         ApiResponse<OrganizationResponse> response = new ApiResponse<>();
-        try {
+        response.setSuccess( true );
+        response.setMessage( "Successfully updated Organization." );
+        response.setResponse( organizationService.updateOrganization( organizationRequest, organizationId ) );
 
-            response.setSuccess( true );
-            response.setMessage( "Successfully updated Organization." );
-            response.setResponse( organizationService.updateOrganization( organizationRequest, organizationId ) );
-
-            return new ResponseEntity<>( response, HttpStatus.OK );
-
-        } catch( InvalidInputException | AppException | EntityNotFoundException e ) {
-
-            response.setSuccess( false );
-            response.setMessage( e.getMessage() );
-            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
-
-            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
-
-        }
+        return new ResponseEntity<>( response, HttpStatus.OK );
 
     }
 
@@ -100,26 +77,14 @@ public class OrganizationController {
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getById" )
     public ResponseEntity<ApiResponse<OrganizationResponse>> getOrganizationById(
-            @RequestParam( name = "orgId" ) String orgId ) {
+            @RequestParam( name = "orgId" ) String orgId ) throws InvalidInputException, EntityNotFoundException {
 
         ApiResponse<OrganizationResponse> response = new ApiResponse<>();
-        try {
+        response.setSuccess( true );
+        response.setMessage( "Successfully retrieved Organization." );
+        response.setResponse( organizationService.findOrganizationById( orgId ) );
 
-            response.setSuccess( true );
-            response.setMessage( "Successfully retrieved Organization." );
-            response.setResponse( organizationService.findOrganizationById( orgId ) );
-
-            return new ResponseEntity<>( response, HttpStatus.OK );
-
-        } catch( InvalidInputException | EntityNotFoundException e ) {
-
-            response.setSuccess( false );
-            response.setMessage( e.getMessage() );
-            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
-
-            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
-
-        }
+        return new ResponseEntity<>( response, HttpStatus.OK );
 
     }
 
@@ -149,26 +114,15 @@ public class OrganizationController {
             @Content( schema = @Schema( implementation = String.class ), mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PostMapping( "/deleteById" )
-    public ResponseEntity<ApiResponse<String>> deleteById( @RequestParam( name = "orgId" ) String orgId ) {
+    public ResponseEntity<ApiResponse<String>> deleteById( @RequestParam( name = "orgId" )
+    String orgId ) throws InvalidInputException, AppException, EntityNotFoundException {
 
         ApiResponse<String> response = new ApiResponse<>();
-        try {
+        response.setSuccess( true );
+        response.setMessage( "Successfully deleted Organization." );
+        response.setResponse( organizationService.deleteOrganizationById( orgId ) );
 
-            response.setSuccess( true );
-            response.setMessage( "Successfully deleted Organization." );
-            response.setResponse( organizationService.deleteOrganizationById( orgId ) );
-
-            return new ResponseEntity<>( response, HttpStatus.OK );
-
-        } catch( InvalidInputException | AppException | EntityNotFoundException e ) {
-
-            response.setSuccess( false );
-            response.setMessage( e.getMessage() );
-            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
-
-            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
-
-        }
+        return new ResponseEntity<>( response, HttpStatus.OK );
 
     }
 

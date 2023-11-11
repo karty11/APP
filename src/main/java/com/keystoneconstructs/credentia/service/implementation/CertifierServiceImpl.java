@@ -4,6 +4,7 @@ import com.keystoneconstructs.credentia.constant.Constants;
 import com.keystoneconstructs.credentia.converters.Converter;
 import com.keystoneconstructs.credentia.exception.AppException;
 import com.keystoneconstructs.credentia.exception.EntityNotFoundException;
+import com.keystoneconstructs.credentia.exception.ErrorCodeAndMessage;
 import com.keystoneconstructs.credentia.exception.InvalidInputException;
 import com.keystoneconstructs.credentia.model.CertifierRequest;
 import com.keystoneconstructs.credentia.model.CertifierResponse;
@@ -44,32 +45,32 @@ public class CertifierServiceImpl implements CertifierService {
                 certifierRequest.getIssueDate() == null || certifierRequest.getExpirationDate() == null ||
                 certifierRequest.getRecipientNames().size() != certifierRequest.getRecipientEmails().size() ) {
 
-            log.error( "Certifier Request not valid. Please verify the Request Body." );
-            throw new InvalidInputException( "Certifier Request not valid. Please verify the Request Body." );
+            log.error( ErrorCodeAndMessage.INVALID_INPUT_EXCEPTION.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.INVALID_INPUT_EXCEPTION );
 
         }
 
         Optional<CertificateEntity> certificate = certificateRepository.findById( certifierRequest.getCertificateId() );
 
         if( certificate.isEmpty() ) {
-            log.error( "Certificate with id " + certifierRequest.getCertificateId() + " was not found." );
-            throw new EntityNotFoundException(
-                    "Certificate with id " + certifierRequest.getCertificateId() + " was not found." );
+            log.error( ErrorCodeAndMessage.CERTIFICATE_ID_NOT_FOUND.getMessage() + "\n" + Constants.ID + " : " +
+                    certifierRequest.getCertificateId() );
+            throw new EntityNotFoundException( ErrorCodeAndMessage.CERTIFICATE_ID_NOT_FOUND );
         }
 
         if( certifierRequest.getTrainingEndDate().before( certifierRequest.getTrainingStartDate() ) ) {
-            log.error( "Invalid Certificate Start Date and Certificate End Date." );
-            throw new InvalidInputException( "Invalid Certificate Start Date and Certificate End Date." );
+            log.error( ErrorCodeAndMessage.CERTIFICATE_DATE_NOT_VALID.getMessage() + "\nStart Date before End Date." );
+            throw new InvalidInputException( ErrorCodeAndMessage.CERTIFICATE_DATE_NOT_VALID );
         }
 
         if( certifierRequest.getIssueDate().before( certifierRequest.getTrainingEndDate() ) ) {
-            log.error( "Invalid Certificate Issue Date." );
-            throw new InvalidInputException( "Invalid Certificate Issue Date." );
+            log.error( ErrorCodeAndMessage.CERTIFICATE_DATE_NOT_VALID.getMessage() + "\nIssue Date." );
+            throw new InvalidInputException( ErrorCodeAndMessage.CERTIFICATE_DATE_NOT_VALID );
         }
 
         if( certifierRequest.getExpirationDate().before( certifierRequest.getIssueDate() ) ) {
-            log.error( "Invalid Certificate Expiration Date." );
-            throw new InvalidInputException( "Invalid Certificate Expiration Date." );
+            log.error( ErrorCodeAndMessage.CERTIFICATE_DATE_NOT_VALID.getMessage() + "\nExpiration Date." );
+            throw new InvalidInputException( ErrorCodeAndMessage.CERTIFICATE_DATE_NOT_VALID );
         }
 
         List<String> recipientNames = certifierRequest.getRecipientNames();
@@ -101,14 +102,14 @@ public class CertifierServiceImpl implements CertifierService {
 
         } catch( Exception e ) {
 
-            log.error( "Failed to add certifiers." );
-            throw new AppException( "Failed to add certifiers." );
+            log.error( ErrorCodeAndMessage.FAILED_SAVE_CERTIFIER.getMessage() );
+            throw new AppException( ErrorCodeAndMessage.FAILED_SAVE_CERTIFIER );
 
         }
 
         if( certifierEntities.size() != recipientNames.size() ) {
-            log.error( "Failed to add a few certificates." );
-            throw new AppException( "Failed to add a few certificates." );
+            log.error( ErrorCodeAndMessage.FAILED_SAVE_CERTIFIER.getMessage() );
+            throw new AppException( ErrorCodeAndMessage.FAILED_SAVE_CERTIFIER );
         }
 
         return certifierEntities.stream().map( Converter::convertCertifierEntityToResponse ).toList();
@@ -119,15 +120,15 @@ public class CertifierServiceImpl implements CertifierService {
     public CertifierResponse getCertifierById( String id ) throws InvalidInputException, EntityNotFoundException {
 
         if( StringUtils.isEmpty( id ) ) {
-            log.error( "Certifier Id cannot be null or empty." );
-            throw new InvalidInputException( "Certifier Id cannot be null or empty." );
+            log.error( ErrorCodeAndMessage.CERTIFIER_ID_MISSING.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.CERTIFIER_ID_MISSING );
         }
 
         Optional<CertifierEntity> certifier = certifierRepository.findById( id );
 
         if( certifier.isEmpty() ) {
-            log.error( "Certifier with id " + id + " was not found." );
-            throw new EntityNotFoundException( "Certifier with id " + id + " was not found." );
+            log.error( ErrorCodeAndMessage.CERTIFIER_ID_NOT_FOUND.getMessage() + "\n" + Constants.ID + " : " + id );
+            throw new EntityNotFoundException( ErrorCodeAndMessage.CERTIFIER_ID_NOT_FOUND );
         }
 
         return Converter.convertCertifierEntityToResponse( certifier.get() );
@@ -138,14 +139,15 @@ public class CertifierServiceImpl implements CertifierService {
     public List<CertifierResponse> getCertifierByEmail( String email ) throws InvalidInputException {
 
         if( StringUtils.isEmpty( email ) ) {
-            log.error( "Email id cannot be null or empty." );
-            throw new InvalidInputException( "Email id cannot be null or empty." );
+            log.error( ErrorCodeAndMessage.USER_EMAIL_MISSING.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.USER_EMAIL_MISSING );
         }
 
         List<CertifierEntity> certifierEntities = certifierRepository.findByRecipientEmail( email );
 
         if( certifierEntities.isEmpty() ) {
-            log.error( "No Certifiers with email " + email + " was not found." );
+            log.error( ErrorCodeAndMessage.CERTIFIER_MAIL_NOT_FOUND.getMessage() + "\n" + Constants.EMAIL + " : " +
+                    email );
             return Collections.emptyList();
         }
 
@@ -158,15 +160,16 @@ public class CertifierServiceImpl implements CertifierService {
             String certificateId ) throws InvalidInputException, EntityNotFoundException {
 
         if( StringUtils.isEmpty( certificateId ) ) {
-            log.error( "Certifier Id cannot be null or empty." );
-            throw new InvalidInputException( "Certifier Id cannot be null or empty." );
+            log.error( ErrorCodeAndMessage.CERTIFICATE_ID_MISSING.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.CERTIFICATE_ID_MISSING );
         }
 
         List<CertifierEntity> certifierEntities = certifierRepository.findAllByCertificate_id( certificateId );
 
         if( certifierEntities.isEmpty() ) {
-            log.error( "Certifiers for Certificate id " + certificateId + " was not found." );
-            throw new EntityNotFoundException( "Certifiers for Certificate id " + certificateId + " was not found." );
+            log.error( ErrorCodeAndMessage.CERTIFICATE_ID_NOT_FOUND.getMessage() + "\n" + Constants.ID + " : " +
+                    certificateId );
+            return Collections.emptyList();
         }
 
         return certifierEntities.stream().map( Converter::convertCertifierEntityToResponse ).toList();
@@ -178,16 +181,17 @@ public class CertifierServiceImpl implements CertifierService {
             String organization ) throws InvalidInputException, EntityNotFoundException {
 
         if( StringUtils.isEmpty( organization ) ) {
-            log.error( "Organization name cannot be null or empty." );
-            throw new InvalidInputException( "Organization name cannot be null or empty." );
+            log.error( ErrorCodeAndMessage.ORGANIZATION_ID_MISSING.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.ORGANIZATION_ID_MISSING );
         }
 
         List<CertifierEntity> certifierEntities = certifierRepository.findAllByRecipientOrganizationIgnoreCase(
                 organization );
 
         if( certifierEntities.isEmpty() ) {
-            log.error( "Certifiers for Organization name " + organization + " was not found." );
-            throw new EntityNotFoundException( "Certifiers for Organization name " + organization + " was not found." );
+            log.error( ErrorCodeAndMessage.CERTIFIER_ORG_NOT_FOUND.getMessage() + "\n" + Constants.ORG_ID + " : " +
+                    organization );
+            return Collections.emptyList();
         }
 
         return certifierEntities.stream().map( Converter::convertCertifierEntityToResponse ).toList();
@@ -198,22 +202,22 @@ public class CertifierServiceImpl implements CertifierService {
     public String deleteCertifierById( String id ) throws InvalidInputException, EntityNotFoundException, AppException {
 
         if( StringUtils.isEmpty( id ) ) {
-            log.error( "Certifier Id cannot be null or empty." );
-            throw new InvalidInputException( "Certifier Id cannot be null or empty." );
+            log.error( ErrorCodeAndMessage.CERTIFIER_ID_MISSING.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.CERTIFIER_ID_MISSING );
         }
 
         Optional<CertifierEntity> certifier = certifierRepository.findById( id );
 
         if( certifier.isEmpty() ) {
-            log.error( "Certifier with id " + id + " was not found." );
-            throw new EntityNotFoundException( "Certifier with id " + id + " was not found." );
+            log.error( ErrorCodeAndMessage.CERTIFIER_ID_NOT_FOUND + "\n" + Constants.ID + " : " + id );
+            throw new EntityNotFoundException( ErrorCodeAndMessage.CERTIFIER_ID_NOT_FOUND );
         }
 
         try {
             certifierRepository.delete( certifier.get() );
         } catch( Exception e ) {
-            log.error( "Failed to delete Certifier with id " + id + "." );
-            throw new AppException( "Failed to delete Certifier with id " + id + "." );
+            log.error( ErrorCodeAndMessage.FAILED_DELETE_CERTIFIER.getMessage() + "\n" + Constants.ID + " : " + id );
+            throw new AppException( ErrorCodeAndMessage.FAILED_DELETE_CERTIFIER );
         }
 
         return Constants.SUCCESS;
@@ -225,5 +229,8 @@ public class CertifierServiceImpl implements CertifierService {
      ------------------ Private Methods ----------------------
      --------------------------------------------------------*/
 
+    private String getString(String string){
+        return string;
+    }
 
 }

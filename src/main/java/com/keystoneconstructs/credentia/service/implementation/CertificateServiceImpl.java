@@ -4,6 +4,7 @@ import com.keystoneconstructs.credentia.constant.Constants;
 import com.keystoneconstructs.credentia.converters.Converter;
 import com.keystoneconstructs.credentia.exception.AppException;
 import com.keystoneconstructs.credentia.exception.EntityNotFoundException;
+import com.keystoneconstructs.credentia.exception.ErrorCodeAndMessage;
 import com.keystoneconstructs.credentia.exception.InvalidInputException;
 import com.keystoneconstructs.credentia.model.CertificateRequest;
 import com.keystoneconstructs.credentia.model.CertificateResponse;
@@ -35,32 +36,33 @@ public class CertificateServiceImpl implements CertificateService {
 
 
     @Override
-    public CertificateResponse addCertificate( CertificateRequest certificateRequest ) throws InvalidInputException, AppException, EntityNotFoundException {
+    public CertificateResponse addCertificate(
+            CertificateRequest certificateRequest ) throws InvalidInputException, AppException, EntityNotFoundException {
 
-        if( certificateRequest == null || StringUtils.isEmpty(
-                certificateRequest.getIssuingAuthority() ) || StringUtils.isEmpty(
-                certificateRequest.getCompanyBranding() ) || StringUtils.isEmpty(
-                certificateRequest.getName() ) || StringUtils.isEmpty( certificateRequest.getOrganizationId() ) ) {
-            log.error( "Please verify the provided Certificate Request Body." );
-            throw new InvalidInputException( "Please verify the provided Certificate Request Body." );
+        if( certificateRequest == null || StringUtils.isEmpty( certificateRequest.getIssuingAuthority() ) ||
+                StringUtils.isEmpty( certificateRequest.getCompanyBranding() ) ||
+                StringUtils.isEmpty( certificateRequest.getName() ) ||
+                StringUtils.isEmpty( certificateRequest.getOrganizationId() ) ) {
+            log.error( ErrorCodeAndMessage.INVALID_INPUT_EXCEPTION.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.INVALID_INPUT_EXCEPTION );
         }
 
         Optional<CertificateEntity> certificate = certificateRepository.findByNameIgnoreCase(
                 certificateRequest.getName() );
 
         if( certificate.isPresent() ) {
-            log.error( "Certificate with name " + certificateRequest.getName() + " already exists." );
-            throw new InvalidInputException(
-                    "Certificate with name " + certificateRequest.getName() + " already exists." );
+            log.error( ErrorCodeAndMessage.DUPLICATE_CERTIFICATE_NAME.getMessage() + "\n" + Constants.NAME + " : " +
+                    certificateRequest.getName() );
+            throw new InvalidInputException( ErrorCodeAndMessage.DUPLICATE_CERTIFICATE_NAME );
         }
 
         Optional<OrganizationEntity> organization = organizationRepository.findById(
                 certificateRequest.getOrganizationId() );
 
         if( organization.isEmpty() ) {
-            log.error( "Organization with id " + certificateRequest.getOrganizationId() + " does not exist." );
-            throw new EntityNotFoundException(
-                    "Organization with id " + certificateRequest.getOrganizationId() + " does not exist." );
+            log.error( ErrorCodeAndMessage.ORGANIZATION_ID_NOT_FOUND.getMessage() + "\n" + Constants.ORG_ID + " : " +
+                    certificateRequest.getOrganizationId() );
+            throw new EntityNotFoundException( ErrorCodeAndMessage.ORGANIZATION_ID_NOT_FOUND );
         }
 
         CertificateEntity certificateEntity = new CertificateEntity();
@@ -89,25 +91,27 @@ public class CertificateServiceImpl implements CertificateService {
         try {
             return Converter.convertCertificateEntityToResponse( certificateRepository.save( certificateEntity ) );
         } catch( Exception e ) {
-            log.error( "Failed to add new Certificate." );
-            throw new AppException( "Failed to add new Certificate." );
+            log.error( ErrorCodeAndMessage.FAILED_SAVE_CERTIFICATE.getMessage() );
+            throw new AppException( ErrorCodeAndMessage.FAILED_SAVE_CERTIFICATE );
         }
 
     }
 
     @Override
-    public CertificateResponse updateCertificate( String certificateId, CertificateRequest certificateRequest ) throws InvalidInputException, EntityNotFoundException, AppException {
+    public CertificateResponse updateCertificate( String certificateId,
+            CertificateRequest certificateRequest ) throws InvalidInputException, EntityNotFoundException, AppException {
 
         if( StringUtils.isEmpty( certificateId ) || certificateRequest == null ) {
-            log.error( "Certificate Id or Certificate Request cannot be null or empty." );
-            throw new InvalidInputException( "Certificate Id or Certificate Request cannot be null or empty." );
+            log.error( ErrorCodeAndMessage.INVALID_INPUT_EXCEPTION.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.INVALID_INPUT_EXCEPTION );
         }
 
         Optional<CertificateEntity> certificate = certificateRepository.findById( certificateId );
 
         if( certificate.isEmpty() ) {
-            log.error( "Certificate with id " + certificateId + " was not found." );
-            throw new EntityNotFoundException( "Certificate with id " + certificateId + " was not found." );
+            log.error( ErrorCodeAndMessage.CERTIFICATE_ID_NOT_FOUND.getMessage() + "\n" + Constants.ID + " : " +
+                    certificateId );
+            throw new EntityNotFoundException( ErrorCodeAndMessage.CERTIFICATE_ID_NOT_FOUND );
         }
 
         CertificateEntity certificateEntity = certificate.get();
@@ -126,61 +130,65 @@ public class CertificateServiceImpl implements CertificateService {
                     certificateRequest.getName() );
 
             if( update.isPresent() ) {
-                log.error( "Certificate with name " + certificateRequest.getName() + " already exists." );
-                throw new InvalidInputException(
-                        "Certificate with name " + certificateRequest.getName() + " already exists." );
+                log.error( ErrorCodeAndMessage.DUPLICATE_CERTIFICATE_NAME.getMessage() + "\n" + Constants.NAME + " : " +
+                        certificateRequest.getName() );
+                throw new InvalidInputException( ErrorCodeAndMessage.DUPLICATE_CERTIFICATE_NAME );
             }
 
             certificateEntity.setName( certificateRequest.getName() );
 
         }
 
-        if( StringUtils.isEmpty( certificateEntity.getCertificationCriteria() ) || ( StringUtils.isNotEmpty(
-                certificateRequest.getCertificationCriteria() ) && !certificateRequest.getCertificationCriteria()
-                .equals( certificateEntity.getCertificationCriteria() ) ) ) {
+        if( StringUtils.isEmpty( certificateEntity.getCertificationCriteria() ) ||
+                ( StringUtils.isNotEmpty( certificateRequest.getCertificationCriteria() ) &&
+                        !certificateRequest.getCertificationCriteria()
+                                .equals( certificateEntity.getCertificationCriteria() ) ) ) {
             certificateEntity.setCertificationCriteria( certificateRequest.getCertificationCriteria() );
         }
 
-        if( StringUtils.isEmpty( certificateEntity.getRevokeCriteria() ) || ( StringUtils.isNotEmpty(
-                certificateRequest.getRevokeCriteria() ) && !certificateRequest.getRevokeCriteria()
-                .equals( certificateEntity.getRevokeCriteria() ) ) ) {
+        if( StringUtils.isEmpty( certificateEntity.getRevokeCriteria() ) ||
+                ( StringUtils.isNotEmpty( certificateRequest.getRevokeCriteria() ) &&
+                        !certificateRequest.getRevokeCriteria().equals( certificateEntity.getRevokeCriteria() ) ) ) {
             certificateEntity.setRevokeCriteria( certificateRequest.getRevokeCriteria() );
         }
 
-        if( StringUtils.isEmpty( certificateEntity.getCourseUrl() ) || ( StringUtils.isNotEmpty(
-                certificateRequest.getCourseUrl() ) && !certificateRequest.getCourseUrl()
-                .equals( certificateEntity.getCourseUrl() ) ) ) {
+        if( StringUtils.isEmpty( certificateEntity.getCourseUrl() ) ||
+                ( StringUtils.isNotEmpty( certificateRequest.getCourseUrl() ) &&
+                        !certificateRequest.getCourseUrl().equals( certificateEntity.getCourseUrl() ) ) ) {
             certificateEntity.setCourseUrl( certificateRequest.getCourseUrl() );
         }
 
-        if( StringUtils.isEmpty( certificateEntity.getWebsite() ) || ( StringUtils.isNotEmpty(
-                certificateRequest.getWebsite() ) || !certificateRequest.getWebsite()
-                .equals( certificateEntity.getWebsite() ) ) ) {
+        if( StringUtils.isEmpty( certificateEntity.getWebsite() ) ||
+                ( StringUtils.isNotEmpty( certificateRequest.getWebsite() ) ||
+                        !certificateRequest.getWebsite().equals( certificateEntity.getWebsite() ) ) ) {
             certificateEntity.setWebsite( certificateRequest.getWebsite() );
         }
 
         try {
             return Converter.convertCertificateEntityToResponse( certificateRepository.save( certificateEntity ) );
         } catch( Exception e ) {
-            log.error( "Failed to update Certificate Entity with id " + certificateId + "." );
-            throw new AppException( "Failed to update Certificate Entity with id " + certificateId + "." );
+            log.error( ErrorCodeAndMessage.FAILED_SAVE_CERTIFICATE.getMessage() + "\n" + Constants.ID + " : " +
+                    certificateId );
+            throw new AppException( ErrorCodeAndMessage.FAILED_SAVE_CERTIFICATE );
         }
 
     }
 
     @Override
-    public CertificateResponse findCertificateById( String certificateId ) throws InvalidInputException, EntityNotFoundException {
+    public CertificateResponse findCertificateById(
+            String certificateId ) throws InvalidInputException, EntityNotFoundException {
 
         if( StringUtils.isEmpty( certificateId ) ) {
-            log.error( "Certificate Id cannot be null or empty." );
-            throw new InvalidInputException( "Certificate Id cannot be null or empty." );
+            log.error( ErrorCodeAndMessage.CERTIFIER_ID_MISSING.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.CERTIFIER_ID_MISSING );
         }
 
         Optional<CertificateEntity> certificate = certificateRepository.findById( certificateId );
 
         if( certificate.isEmpty() ) {
-            log.error( "Certificate with id " + certificateId + " was not found." );
-            throw new EntityNotFoundException( "Certificate with id " + certificateId + " was not found." );
+            log.error( ErrorCodeAndMessage.CERTIFICATE_ID_NOT_FOUND.getMessage() + "\n" + Constants.ID + " : " +
+                    certificateId );
+            throw new EntityNotFoundException( ErrorCodeAndMessage.CERTIFIER_ID_NOT_FOUND );
         }
 
         return Converter.convertCertificateEntityToResponse( certificate.get() );
@@ -191,14 +199,15 @@ public class CertificateServiceImpl implements CertificateService {
     public List<CertificateResponse> findAllCertificatesByOrganization( String orgId ) throws InvalidInputException {
 
         if( StringUtils.isEmpty( orgId ) ) {
-            log.error( "Organization Id cannot be null or empty." );
-            throw new InvalidInputException( "Organization Id cannot be null or empty." );
+            log.error( ErrorCodeAndMessage.ORGANIZATION_ID_MISSING.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.ORGANIZATION_ID_MISSING );
         }
 
         List<CertificateEntity> certificates = certificateRepository.findAllByOrganization_id( orgId );
 
         if( certificates.isEmpty() ) {
-            log.info( "No certificates found for given organization with id " + orgId + "." );
+            log.info(
+                    ErrorCodeAndMessage.CERTIFICATE_ORG_EMPTY.getMessage() + "\n" + Constants.ORG_ID + " : " + orgId );
             return Collections.emptyList();
         }
 
@@ -207,25 +216,28 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public String deleteCertificateById( String certificateId ) throws InvalidInputException, EntityNotFoundException, AppException {
+    public String deleteCertificateById(
+            String certificateId ) throws InvalidInputException, EntityNotFoundException, AppException {
 
         if( StringUtils.isEmpty( certificateId ) ) {
-            log.error( "Certificate Id cannot be empty or null." );
-            throw new InvalidInputException( "Certificate Id cannot be empty or null." );
+            log.error( ErrorCodeAndMessage.CERTIFICATE_ID_MISSING.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.CERTIFICATE_ID_MISSING );
         }
 
         Optional<CertificateEntity> certificate = certificateRepository.findById( certificateId );
 
         if( certificate.isEmpty() ) {
-            log.error( "Certificate with id " + certificateId + " was not found." );
-            throw new EntityNotFoundException( "Certificate with id " + certificateId + " was not found." );
+            log.error( ErrorCodeAndMessage.CERTIFICATE_ID_NOT_FOUND.getMessage() + "\n" + Constants.ID + " : " +
+                    certificateId );
+            throw new EntityNotFoundException( ErrorCodeAndMessage.CERTIFICATE_ID_NOT_FOUND );
         }
 
         try {
             certificateRepository.delete( certificate.get() );
         } catch( Exception e ) {
-            log.error( "Failed to delete Certificate with id " + certificateId + "." );
-            throw new AppException( "Failed to delete Certificate with id " + certificateId + "." );
+            log.error( ErrorCodeAndMessage.FAILED_DELETE_CERTIFICATE.getMessage() + "\n" + Constants.ID + " : " +
+                    certificateId );
+            throw new AppException( ErrorCodeAndMessage.FAILED_DELETE_CERTIFICATE );
         }
 
         return Constants.SUCCESS;
@@ -237,5 +249,8 @@ public class CertificateServiceImpl implements CertificateService {
      ------------------ Private Methods ----------------------
      --------------------------------------------------------*/
 
+    private String getString(String string){
+        return string;
+    }
 
 }

@@ -17,6 +17,7 @@ import java.security.spec.InvalidKeySpecException;
 
 @Slf4j
 @ControllerAdvice
+@Slf4j
 public class CredentiaControllerAdvice {
 
     @ExceptionHandler( Exception.class )
@@ -32,12 +33,12 @@ public class CredentiaControllerAdvice {
         ApiResponse<String> apiResponse = new ApiResponse<>();
         apiResponse.setSuccess( false );
         apiResponse.setMessage( e.getMessage() );
-        apiResponse.setErrorCode( stackTrace );
+        apiResponse.setErrorCode( e.getCause().getMessage() );
         return new ResponseEntity<>( apiResponse, status );
     }
 
     @ExceptionHandler( EntityNotFoundException.class )
-    public ResponseEntity<ApiResponse<String>> handleEntityNotFoundExceptions( Exception e ) {
+    public ResponseEntity<ApiResponse<String>> handleEntityNotFoundExceptions( EntityNotFoundException e ) {
 
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -48,13 +49,13 @@ public class CredentiaControllerAdvice {
 
         ApiResponse<String> apiResponse = new ApiResponse<>();
         apiResponse.setSuccess( false );
-        apiResponse.setMessage( e.getMessage() );
-        apiResponse.setErrorCode( stackTrace );
+        apiResponse.setMessage( e.getErrorMessage() );
+        apiResponse.setErrorCode( e.getErrorCode() );
         return new ResponseEntity<>( apiResponse, status );
     }
 
     @ExceptionHandler( InvalidInputException.class )
-    public ResponseEntity<ApiResponse<String>> handleInvalidInputExceptions( Exception e ) {
+    public ResponseEntity<ApiResponse<String>> handleInvalidInputExceptions( InvalidInputException e ) {
 
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -65,13 +66,13 @@ public class CredentiaControllerAdvice {
 
         ApiResponse<String> apiResponse = new ApiResponse<>();
         apiResponse.setSuccess( false );
-        apiResponse.setMessage( e.getMessage() );
-        apiResponse.setErrorCode( stackTrace );
+        apiResponse.setMessage( e.getErrorMessage() );
+        apiResponse.setErrorCode( e.getErrorCode() );
         return new ResponseEntity<>( apiResponse, status );
     }
 
     @ExceptionHandler( AppException.class )
-    public ResponseEntity<ApiResponse<String>> handleAppExceptions( Exception e ) {
+    public ResponseEntity<ApiResponse<String>> handleAppExceptions( AppException e ) {
 
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -82,8 +83,8 @@ public class CredentiaControllerAdvice {
 
         ApiResponse<String> apiResponse = new ApiResponse<>();
         apiResponse.setSuccess( false );
-        apiResponse.setMessage( e.getMessage() );
-        apiResponse.setErrorCode( stackTrace );
+        apiResponse.setMessage( e.getErrorMessage() );
+        apiResponse.setErrorCode( e.getErrorCode() );
         return new ResponseEntity<>( apiResponse, status );
     }
 
@@ -100,7 +101,7 @@ public class CredentiaControllerAdvice {
         ApiResponse<String> apiResponse = new ApiResponse<>();
         apiResponse.setSuccess( false );
         apiResponse.setMessage( e.getMessage() );
-        apiResponse.setErrorCode( stackTrace );
+        apiResponse.setErrorCode( e.getCause().getMessage() );
         return new ResponseEntity<>( apiResponse, status );
     }
 
@@ -154,7 +155,7 @@ public class CredentiaControllerAdvice {
         ApiResponse<String> apiResponse = new ApiResponse<>();
         apiResponse.setSuccess( false );
         apiResponse.setMessage( e.getMessage() );
-        apiResponse.setErrorCode( stackTrace );
+        apiResponse.setErrorCode( e.getCause().getMessage() );
         return new ResponseEntity<>( apiResponse, status );
     }
 

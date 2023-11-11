@@ -2,13 +2,27 @@ package com.keystoneconstructs.credentia.exception;
 
 public abstract class BaseException extends Exception {
 
-    private String message;
+    private ErrorCodeAndMessage errorCodeAndMessage;
 
-    public BaseException( String message ) {
-        super( message );
+    protected BaseException( ErrorCodeAndMessage errorCodeAndMessage ) {
+        super( errorCodeAndMessage.getErrorCode() + " : " + errorCodeAndMessage.getMessage() );
+        this.errorCodeAndMessage = errorCodeAndMessage;
     }
 
-    public BaseException( String message, Throwable cause ) {
-        super( message, cause );
+    protected BaseException( ErrorCodeAndMessage errorCodeAndMessage, Throwable cause ) {
+        super( errorCodeAndMessage.getErrorCode() + " : " + errorCodeAndMessage.getMessage(), cause );
+        this.errorCodeAndMessage = errorCodeAndMessage;
     }
+
+
+    public String getErrorCode() {
+        return this.errorCodeAndMessage.getErrorCode();
+
+    }
+
+    public String getErrorMessage() {
+        return this.errorCodeAndMessage.getMessage();
+
+    }
+
 }

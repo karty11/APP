@@ -6,6 +6,7 @@ import com.keystoneconstructs.credentia.constant.Role;
 import com.keystoneconstructs.credentia.converters.Converter;
 import com.keystoneconstructs.credentia.exception.AppException;
 import com.keystoneconstructs.credentia.exception.EntityNotFoundException;
+import com.keystoneconstructs.credentia.exception.ErrorCodeAndMessage;
 import com.keystoneconstructs.credentia.exception.InvalidInputException;
 import com.keystoneconstructs.credentia.model.UserRequest;
 import com.keystoneconstructs.credentia.model.UserResponse;
@@ -41,19 +42,16 @@ public class UserServiceImpl implements UserService {
         if( userRequest == null || StringUtils.isEmpty( userRequest.getRole() ) ||
                 StringUtils.isEmpty( userRequest.getFirstName() ) || StringUtils.isEmpty( userRequest.getLastName() ) ||
                 userRequest.getOrganizationRequest() == null ||
-                StringUtils.isEmpty( userRequest.getOrganizationRequest().getOrganizationName() ) ||
-                StringUtils.isEmpty( userRequest.getPassword() ) ) {
-
-            log.error( "Invalid Inputs provides. Please check User Request Body." );
-            throw new InvalidInputException( "Invalid Inputs provides. Please check User Request Body." );
-
+                StringUtils.isEmpty( userRequest.getOrganizationRequest().getOrganizationName() ) ) {
+            log.error( ErrorCodeAndMessage.INVALID_INPUT_EXCEPTION.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.INVALID_INPUT_EXCEPTION );
         }
 
         Optional<UserEntity> user = userRepository.findByEmailIgnoreCase( userRequest.getEmail() );
 
         if( user.isPresent() ) {
-            log.error( "User with given email already exists." );
-            throw new AppException( "User with given email already exists." );
+            log.error( ErrorCodeAndMessage.DUPLICATE_USER_EMAIL.getMessage() );
+            throw new AppException( ErrorCodeAndMessage.DUPLICATE_USER_EMAIL );
         }
 
         log.info( "Creating user." );
@@ -120,8 +118,8 @@ public class UserServiceImpl implements UserService {
             return Converter.convertUserEntityToResponse( userRepository.save( userEntity ) );
 
         } catch( Exception e ) {
-            log.error( "Failed to add new User." );
-            throw new AppException( "Failed to add new User." );
+            log.error( ErrorCodeAndMessage.FAILED_SAVE_USER.getMessage() );
+            throw new AppException( ErrorCodeAndMessage.FAILED_SAVE_USER );
         }
 
     }
@@ -132,22 +130,23 @@ public class UserServiceImpl implements UserService {
             String userId ) throws InvalidInputException, EntityNotFoundException, AppException {
 
         if( userRequest == null || StringUtils.isEmpty( userId ) ) {
-            log.error( "Invalid Inputs provides. Please check User Request Body and User Id." );
-            throw new InvalidInputException( "Invalid Inputs provides. Please check User Request Body and User Id." );
+            log.error( ErrorCodeAndMessage.INVALID_INPUT_EXCEPTION.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.INVALID_INPUT_EXCEPTION );
         }
 
         Optional<UserEntity> user = userRepository.findById( userId );
 
         if( user.isEmpty() ) {
-            log.error( "User with Id " + userId + " was not found." );
-            throw new EntityNotFoundException( "User with Id " + userId + " was not found." );
+            log.error( ErrorCodeAndMessage.USER_ID_NOT_FOUND.getMessage() + "\n" + Constants.ID + " : " + userId );
+            throw new EntityNotFoundException( ErrorCodeAndMessage.USER_ID_NOT_FOUND );
         }
 
         UserEntity userEntity = user.get();
 
         if( userEntity.isDeleted() ) {
-            log.error( "User with Id " + userId + " is not active." );
-            throw new EntityNotFoundException( "User with Id " + userId + " is not active." );
+            log.error( ErrorCodeAndMessage.USER_ID_NOT_FOUND.getMessage() + "\n" + Constants.ID + " : " + userId +
+                    " deactivated." );
+            throw new EntityNotFoundException( ErrorCodeAndMessage.USER_ID_NOT_FOUND );
         }
 
         log.info( "Updating user with id -> " + userId );
@@ -158,8 +157,8 @@ public class UserServiceImpl implements UserService {
             log.info( "Updated user with id -> " + userId );
             return Converter.convertUserEntityToResponse( userRepository.save( userEntity ) );
         } catch( Exception e ) {
-            log.error( "Failed to update User." );
-            throw new AppException( "Failed to update User." );
+            log.error( ErrorCodeAndMessage.FAILED_SAVE_USER.getMessage() );
+            throw new AppException( ErrorCodeAndMessage.FAILED_SAVE_USER );
         }
 
     }
@@ -209,15 +208,15 @@ public class UserServiceImpl implements UserService {
     public UserResponse findUserById( String userId ) throws InvalidInputException, EntityNotFoundException {
 
         if( StringUtils.isEmpty( userId ) ) {
-            log.error( "User Id cannot be empty or null." );
-            throw new InvalidInputException( "User Id cannot be empty or null." );
+            log.error( ErrorCodeAndMessage.USER_ID_MISSING.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.USER_ID_MISSING );
         }
 
         Optional<UserEntity> user = userRepository.findById( userId );
 
         if( user.isEmpty() ) {
-            log.error( "User with Id " + userId + " was not found." );
-            throw new EntityNotFoundException( "User with Id " + userId + " was not found." );
+            log.error( ErrorCodeAndMessage.USER_ID_NOT_FOUND.getMessage() + "\n" + Constants.ID + " : " + userId );
+            throw new EntityNotFoundException( ErrorCodeAndMessage.USER_ID_NOT_FOUND );
         }
 
         return Converter.convertUserEntityToResponse( user.get() );
@@ -229,15 +228,15 @@ public class UserServiceImpl implements UserService {
     public UserResponse findUserByEmail( String email ) throws InvalidInputException, EntityNotFoundException {
 
         if( StringUtils.isEmpty( email ) ) {
-            log.error( "Email cannot be empty or null." );
-            throw new InvalidInputException( "Email cannot be empty or null." );
+            log.error( ErrorCodeAndMessage.USER_EMAIL_MISSING.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.USER_EMAIL_MISSING );
         }
 
         Optional<UserEntity> user = userRepository.findByEmailIgnoreCase( email );
 
         if( user.isEmpty() ) {
-            log.error( "User with email " + email + " was not found." );
-            throw new EntityNotFoundException( "User with email " + email + " was not found." );
+            log.error( ErrorCodeAndMessage.USER_EMAIL_NOT_FOUND.getMessage() + "\n" + Constants.EMAIL + " : " + email );
+            throw new EntityNotFoundException( ErrorCodeAndMessage.USER_EMAIL_NOT_FOUND );
         }
 
         return Converter.convertUserEntityToResponse( user.get() );
@@ -250,15 +249,15 @@ public class UserServiceImpl implements UserService {
             String userGroupId ) throws InvalidInputException, EntityNotFoundException {
 
         if( StringUtils.isEmpty( userGroupId ) ) {
-            log.error( "User Group Id cannot be empty or null." );
-            throw new InvalidInputException( "User Group Id cannot be empty or null." );
+            log.error( ErrorCodeAndMessage.INVALID_INPUT_EXCEPTION.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.INVALID_INPUT_EXCEPTION );
         }
 
         List<UserEntity> users = userRepository.findAllByUserGroupId( userGroupId );
 
         if( users.isEmpty() ) {
-            log.error( "No Users with User Group Id " + userGroupId + " were not found." );
-            throw new EntityNotFoundException( "No Users with User Group Id " + userGroupId + " were not found." );
+            log.error( ErrorCodeAndMessage.USER_GROUP_EMPTY.getMessage() + "\n" + Constants.ID + " : " + userGroupId );
+            return Collections.emptyList();
         }
 
         return users.stream().map( Converter::convertUserEntityToResponse ).toList();
@@ -271,22 +270,22 @@ public class UserServiceImpl implements UserService {
             String orgId ) throws InvalidInputException, EntityNotFoundException {
 
         if( StringUtils.isEmpty( orgId ) ) {
-            log.error( "Organization Id cannot be empty or null." );
-            throw new InvalidInputException( "Organization Id cannot be empty or null." );
+            log.error( ErrorCodeAndMessage.ORGANIZATION_ID_MISSING.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.ORGANIZATION_ID_MISSING );
         }
 
         Optional<OrganizationEntity> organization = organizationRepository.findById( orgId );
 
         if( organization.isEmpty() ) {
-            log.error( "Organization with Id " + orgId + " was not found." );
-            throw new EntityNotFoundException( "Organization with Id " + orgId + " was not found." );
+            log.error( ErrorCodeAndMessage.ORGANIZATION_ID_NOT_FOUND.getMessage() + "\n" + Constants.ORG_ID + " : " + orgId );
+            throw new EntityNotFoundException( ErrorCodeAndMessage.ORGANIZATION_ID_NOT_FOUND );
         }
 
         List<UserEntity> userEntities = userRepository.findAllByOrganization_id( orgId );
 
         if( userEntities.isEmpty() ) {
-            log.error( "No Users found for Organization Id " + orgId + " were found." );
-            throw new EntityNotFoundException( "No Users found for Organization Id " + orgId + " were found." );
+            log.error( ErrorCodeAndMessage.USER_GROUP_EMPTY.getMessage() + "\n" + Constants.ORG_ID + " : " + orgId );
+            return Collections.emptyList();
         }
 
         return userEntities.stream().map( Converter::convertUserEntityToResponse ).toList();
@@ -298,22 +297,22 @@ public class UserServiceImpl implements UserService {
     public String deleteUserById( String id ) throws InvalidInputException, EntityNotFoundException, AppException {
 
         if( StringUtils.isEmpty( id ) ) {
-            log.error( "User Id cannot be empty or null." );
-            throw new InvalidInputException( "User Id cannot be empty or null." );
+            log.error( ErrorCodeAndMessage.USER_ID_MISSING.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.USER_ID_MISSING );
         }
 
         Optional<UserEntity> user = userRepository.findById( id );
 
         if( user.isEmpty() ) {
-            log.error( "User with id " + id + " was not found." );
-            throw new EntityNotFoundException( "User with id " + id + " was not found." );
+            log.error( ErrorCodeAndMessage.USER_ID_NOT_FOUND.getMessage() + "\n"  + Constants.ID + " : " + id );
+            throw new EntityNotFoundException( ErrorCodeAndMessage.USER_ID_NOT_FOUND );
         }
 
         try {
             userRepository.delete( user.get() );
         } catch( Exception e ) {
-            log.error( "Failed to delete User with id " + id + "." );
-            throw new AppException( "Failed to delete User with id " + id + "." );
+            log.error( ErrorCodeAndMessage.FAILED_DELETE_USER.getMessage()+ "\n"  + Constants.ID + " : " + id );
+            throw new AppException( ErrorCodeAndMessage.FAILED_DELETE_USER );
         }
         return Constants.SUCCESS;
 
