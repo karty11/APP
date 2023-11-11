@@ -1,12 +1,12 @@
 package com.keystoneconstructs.credentia.exception;
 
-public class AppException extends BaseException{
+public class AppException extends BaseException {
 
-    public AppException( String message ) {
-        super( message );
+    public AppException( ErrorCodeAndMessage errorCodeAndMessage ) {
+        super( errorCodeAndMessage );
     }
 
-    public AppException( String message, Throwable cause ) {
-        super( message, cause );
+    public AppException( ErrorCodeAndMessage errorCodeAndMessage, Throwable cause ) {
+        super( errorCodeAndMessage, cause );
     }
 }

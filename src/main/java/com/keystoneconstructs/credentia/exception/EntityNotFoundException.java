@@ -2,12 +2,12 @@ package com.keystoneconstructs.credentia.exception;
 
 public class EntityNotFoundException extends BaseException {
 
-    public EntityNotFoundException( String message ) {
-        super( message );
+    public EntityNotFoundException( ErrorCodeAndMessage errorCodeAndMessage ) {
+        super( errorCodeAndMessage );
     }
 
-    public EntityNotFoundException( String message, Throwable cause ) {
-        super( message, cause );
+    public EntityNotFoundException( ErrorCodeAndMessage errorCodeAndMessage, Throwable cause ) {
+        super( errorCodeAndMessage, cause );
     }
 
 }
