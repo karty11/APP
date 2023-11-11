@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -102,21 +103,17 @@ public class UserServiceImpl implements UserService {
         }
 
         try {
-
             userEntity.setSalt( EncryptionUtils.getNewSalt() );
             userEntity.setEncryptedPassword(
                     EncryptionUtils.getEncryptedPassword( userRequest.getPassword(), userEntity.getSalt() ) );
-
         } catch( NoSuchAlgorithmException | InvalidKeySpecException e ) {
             log.error( e.getMessage() );
-            throw new AppException( e.getMessage() );
+            throw new AppException( ErrorCodeAndMessage.FAILED_ENCRYPT_PASSWORD, e );
         }
 
         try {
-
             log.info( "User Created with Id -> " + userEntity.getId() );
             return Converter.convertUserEntityToResponse( userRepository.save( userEntity ) );
-
         } catch( Exception e ) {
             log.error( ErrorCodeAndMessage.FAILED_SAVE_USER.getMessage() );
             throw new AppException( ErrorCodeAndMessage.FAILED_SAVE_USER );
@@ -169,15 +166,15 @@ public class UserServiceImpl implements UserService {
 
         if( StringUtils.isEmpty( userId ) || StringUtils.isEmpty( oldPassword ) ||
                 StringUtils.isEmpty( newPassword ) ) {
-            log.error( "Invalid inputs. Please verify the input fields." );
-            throw new InvalidInputException( "Invalid inputs. Please verify the input fields." );
+            log.error( ErrorCodeAndMessage.INVALID_INPUT_EXCEPTION.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.INVALID_INPUT_EXCEPTION );
         }
 
         Optional<UserEntity> user = userRepository.findById( userId );
 
         if( user.isEmpty() ) {
-            log.error( "User with id " + userId + " was not found." );
-            throw new EntityNotFoundException( "User with id " + userId + " was not found." );
+            log.error( ErrorCodeAndMessage.USER_ID_NOT_FOUND.getMessage() + "\n" + Constants.ID + " : " + userId );
+            throw new EntityNotFoundException( ErrorCodeAndMessage.USER_ID_NOT_FOUND );
         }
 
         UserEntity userEntity = user.get();
@@ -186,8 +183,8 @@ public class UserServiceImpl implements UserService {
 
             if( !userEntity.getEncryptedPassword()
                     .equals( EncryptionUtils.getEncryptedPassword( oldPassword, userEntity.getSalt() ) ) ) {
-                log.error( "Invalid Current Password entered." );
-                throw new InvalidInputException( "Invalid Current Password entered." );
+                log.error( ErrorCodeAndMessage.INVALID_PASSWORD.getMessage() );
+                throw new InvalidInputException( ErrorCodeAndMessage.INVALID_PASSWORD );
             }
 
             userEntity.setSalt( EncryptionUtils.getNewSalt() );
@@ -199,7 +196,7 @@ public class UserServiceImpl implements UserService {
             return Converter.convertUserEntityToResponse( userRepository.save( userEntity ) );
 
         } catch( Exception e ) {
-            throw new AppException( e.getMessage() );
+            throw new AppException( ErrorCodeAndMessage.FAILED_ENCRYPT_PASSWORD, e );
         }
 
     }
@@ -277,7 +274,8 @@ public class UserServiceImpl implements UserService {
         Optional<OrganizationEntity> organization = organizationRepository.findById( orgId );
 
         if( organization.isEmpty() ) {
-            log.error( ErrorCodeAndMessage.ORGANIZATION_ID_NOT_FOUND.getMessage() + "\n" + Constants.ORG_ID + " : " + orgId );
+            log.error( ErrorCodeAndMessage.ORGANIZATION_ID_NOT_FOUND.getMessage() + "\n" + Constants.ORG_ID + " : " +
+                    orgId );
             throw new EntityNotFoundException( ErrorCodeAndMessage.ORGANIZATION_ID_NOT_FOUND );
         }
 
@@ -304,14 +302,14 @@ public class UserServiceImpl implements UserService {
         Optional<UserEntity> user = userRepository.findById( id );
 
         if( user.isEmpty() ) {
-            log.error( ErrorCodeAndMessage.USER_ID_NOT_FOUND.getMessage() + "\n"  + Constants.ID + " : " + id );
+            log.error( ErrorCodeAndMessage.USER_ID_NOT_FOUND.getMessage() + "\n" + Constants.ID + " : " + id );
             throw new EntityNotFoundException( ErrorCodeAndMessage.USER_ID_NOT_FOUND );
         }
 
         try {
             userRepository.delete( user.get() );
         } catch( Exception e ) {
-            log.error( ErrorCodeAndMessage.FAILED_DELETE_USER.getMessage()+ "\n"  + Constants.ID + " : " + id );
+            log.error( ErrorCodeAndMessage.FAILED_DELETE_USER.getMessage() + "\n" + Constants.ID + " : " + id );
             throw new AppException( ErrorCodeAndMessage.FAILED_DELETE_USER );
         }
         return Constants.SUCCESS;
@@ -325,7 +323,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * This method verifies and supplies User Request fields to User Entity.
-     * @param userEntity - User Entity object
+     * @param userEntity  - User Entity object
      * @param userRequest - User Request object
      */
     private void verifyUpdateUserEntity( UserEntity userEntity, UserRequest userRequest ) {

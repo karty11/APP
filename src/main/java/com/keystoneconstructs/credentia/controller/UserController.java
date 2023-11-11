@@ -73,27 +73,15 @@ public class UserController {
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PostMapping( "/resetPassword" )
     public ResponseEntity<ApiResponse<UserResponse>> updateUserPassword( @RequestParam( name = "userId" ) String userId,
-            @RequestParam( name = "oldPassword" ) String oldPassword,
-            @RequestParam( name = "newPassword" ) String newPassword ) {
+            @RequestParam( name = "oldPassword" ) String oldPassword, @RequestParam( name = "newPassword" )
+    String newPassword ) throws InvalidInputException, AppException, EntityNotFoundException {
 
         ApiResponse<UserResponse> response = new ApiResponse<>();
-        try {
+        response.setSuccess( true );
+        response.setMessage( "Successfully updated User Password." );
+        response.setResponse( userService.updatePassword( userId, oldPassword, newPassword ) );
 
-            response.setSuccess( true );
-            response.setMessage( "Successfully updated User Password." );
-            response.setResponse( userService.updatePassword( userId, oldPassword, newPassword ) );
-
-            return new ResponseEntity<>( response, HttpStatus.OK );
-
-        } catch( InvalidInputException | AppException | EntityNotFoundException e ) {
-
-            response.setSuccess( false );
-            response.setMessage( e.getMessage() );
-            response.setErrorCode( Arrays.toString( e.getStackTrace() ) );
-
-            return new ResponseEntity<>( response, HttpStatus.INTERNAL_SERVER_ERROR );
-
-        }
+        return new ResponseEntity<>( response, HttpStatus.OK );
 
     }
 

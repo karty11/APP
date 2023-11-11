@@ -39,6 +39,8 @@ public enum ErrorCodeAndMessage {
     USER_EMAIL_NOT_FOUND("CRDN0000", "User with given Email Id was not found."),
     USER_GROUP_EMPTY("CRDN0000", "Users not found for given User Group Id."),
     USER_ORG_EMPTY("CRDN0000", "Users not found for given Organization Id."),
+    FAILED_ENCRYPT_PASSWORD("CRDN0000", "Failed to encrypt provided Password."),
+    INVALID_PASSWORD("CRDN0000", "Password provided is invalid."),
 
 
     /***************************************************************

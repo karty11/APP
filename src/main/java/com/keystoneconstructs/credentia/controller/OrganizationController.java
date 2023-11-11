@@ -41,7 +41,7 @@ public class OrganizationController {
         ApiResponse<OrganizationResponse> response = new ApiResponse<>();
         response.setSuccess( true );
         response.setMessage( "Successfully created new Organization." );
-        response.setResponse( organizationService.createOrgainzation( organizationRequest ) );
+        response.setResponse( organizationService.createOrganization( organizationRequest ) );
 
         return new ResponseEntity<>( response, HttpStatus.CREATED );
 
