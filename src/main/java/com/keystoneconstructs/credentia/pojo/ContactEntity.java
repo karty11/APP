@@ -1,26 +1,33 @@
 package com.keystoneconstructs.credentia.pojo;
 
+import com.google.gson.annotations.Expose;
 import jakarta.persistence.Column;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class ContactEntity {
 
+    @Expose
     @Column( name = "phone_number" )
     private long phoneNumer;
 
+    @Expose
     @Column( name = "address1" )
     private String address1;
 
+    @Expose
     @Column( name = "address2" )
     private String address2;
 
+    @Expose
     @Column( name = "location" )
     private String location;
 
+    @Expose
     @Column( name = "linkedIn" )
     private String linkedIn;
 
+    @Expose
     @Column( name = "official_email" )
     private String officialEmail;
 

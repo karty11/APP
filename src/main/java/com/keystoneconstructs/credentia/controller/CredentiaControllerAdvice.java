@@ -15,7 +15,6 @@ import java.io.StringWriter;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
-@Slf4j
 @ControllerAdvice
 @Slf4j
 public class CredentiaControllerAdvice {

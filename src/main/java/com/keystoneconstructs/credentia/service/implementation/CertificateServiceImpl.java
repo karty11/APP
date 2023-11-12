@@ -249,7 +249,7 @@ public class CertificateServiceImpl implements CertificateService {
      ------------------ Private Methods ----------------------
      --------------------------------------------------------*/
 
-    private String getString(String string){
+    private String getString( String string ) {
         return string;
     }
 

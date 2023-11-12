@@ -1,49 +1,68 @@
 package com.keystoneconstructs.credentia.pojo;
 
+import com.google.gson.annotations.Expose;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.Type;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.Collections;
 
 @Entity
 @Table( name = "user_entity" )
-public class UserEntity extends AuditFields {
+public class UserEntity extends AuditFields implements UserDetails {
 
     @Id
+    @Expose
     private String id;
 
+    @Expose
     @Column( name = "first_name" )
     private String firstName;
 
+    @Expose
     @Column( name = "last_name" )
     private String lastName;
 
+    @Expose
     @Column( name = "initials" )
     private String initials;
 
+    @Expose
     @Column( name = "role" )
     private String role;
 
+    @Expose
     @Type( JsonType.class )
     @Column( name = "contact", columnDefinition = "json" )
     private ContactEntity contactEntity;
 
+    @Expose
     @Column( name = "email" )
     private String email;
 
+    @Expose
     @Column( name = "user_group_id" )
     private String userGroupId;
 
+    @Expose
     @Column( name = "is_deleted" )
     private boolean deleted;
 
+    @Expose
     @Column( name = "encryption_key" )
     private String salt;
 
+    @Expose
     @Column( name = "encrypted_key" )
     private String encryptedPassword;
 
+    @Expose
     @ManyToOne
     @JoinColumn( name = "organization_id", nullable = false )
     private OrganizationEntity organization;
@@ -149,25 +168,38 @@ public class UserEntity extends AuditFields {
     }
 
     @Override
-    public boolean equals( Object o ) {
-        
-        if( this == o ) {
-            return true;
-        }
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singleton( new SimpleGrantedAuthority( role ) );
+    }
 
-        if( o == null || getClass() != o.getClass() ) {
-            return false;
-        }
+    @Override
+    public String getPassword() {
+        return encryptedPassword;
+    }
 
-        UserEntity that = ( UserEntity ) o;
+    @Override
+    public String getUsername() {
+        return email;
+    }
 
-        return new EqualsBuilder().append( deleted, that.deleted ).append( id, that.id )
-                .append( firstName, that.firstName ).append( lastName, that.lastName ).append( initials, that.initials )
-                .append( role, that.role ).append( contactEntity, that.contactEntity ).append( email, that.email )
-                .append( userGroupId, that.userGroupId ).append( salt, that.salt )
-                .append( encryptedPassword, that.encryptedPassword ).append( organization, that.organization )
-                .isEquals();
+    @Override
+    public boolean isAccountNonExpired() {
+        return isDeleted();
+    }
 
+    @Override
+    public boolean isAccountNonLocked() {
+        return isDeleted();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return isDeleted();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isDeleted();
     }
 
     @Override
@@ -186,4 +218,25 @@ public class UserEntity extends AuditFields {
                 organization + '}';
     }
 
+    @Override
+    public boolean equals( Object o ) {
+
+        if( this == o ) {
+            return true;
+        }
+
+        if( o == null || getClass() != o.getClass() ) {
+            return false;
+        }
+
+        UserEntity that = ( UserEntity ) o;
+
+        return new EqualsBuilder().append( deleted, that.deleted ).append( id, that.id )
+                .append( firstName, that.firstName ).append( lastName, that.lastName ).append( initials, that.initials )
+                .append( role, that.role ).append( contactEntity, that.contactEntity ).append( email, that.email )
+                .append( userGroupId, that.userGroupId ).append( salt, that.salt )
+                .append( encryptedPassword, that.encryptedPassword ).append( organization, that.organization )
+                .isEquals();
+
+    }
 }

@@ -11,6 +11,7 @@ import com.keystoneconstructs.credentia.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ import java.util.List;
 
 @RestController
 @Tag( name = "User Controller", description = "Controller for all User API endpoints." )
-@RequestMapping( "api/v1/user" )
+@RequestMapping( "/api/v1/user" )
 public class UserController {
 
     @Autowired
@@ -47,11 +48,31 @@ public class UserController {
     }
 
 
+    @Operation( summary = "API to login an existing User using User Email and Password.",
+            description = "This API log's in an existing User with the given Email and Password." )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
+            @Content( schema = @Schema( implementation = String.class ), mediaType = "application/json" ) } )
+    @CrossOrigin( origins = "*", allowedHeaders = "*" )
+    @PutMapping( "/login" )
+    public ResponseEntity<ApiResponse<String>> createUser( String email,
+            String password ) throws InvalidInputException, AppException, EntityNotFoundException {
+
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setSuccess( true );
+        response.setMessage( "Successfully logged in." );
+        response.setResponse( userService.loginUser( email, password ) );
+
+        return new ResponseEntity<>( response, HttpStatus.OK );
+
+    }
+
+
     @Operation( summary = "API to update existing User.",
             description = "This API updates an existing User based on User Id and User Request." )
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
+    @SecurityRequirement( name = "credentia_auth" )
     @PostMapping( "/edit" )
     public ResponseEntity<ApiResponse<UserResponse>> updateUser( @RequestParam( name = "userId" ) String userId,
             @RequestBody UserRequest userRequest ) throws InvalidInputException, AppException, EntityNotFoundException {
@@ -91,6 +112,7 @@ public class UserController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
+    @SecurityRequirement( name = "credentia_auth" )
     @GetMapping( "/getById" )
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(
             @RequestParam( name = "userId" ) String userId ) throws InvalidInputException, EntityNotFoundException {
@@ -111,6 +133,7 @@ public class UserController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
+    @SecurityRequirement( name = "credentia_auth" )
     @GetMapping( "/getByEmail" )
     public ResponseEntity<ApiResponse<UserResponse>> getUserByEmail(
             @RequestParam( name = "email" ) String email ) throws InvalidInputException, EntityNotFoundException {
@@ -130,6 +153,7 @@ public class UserController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
+    @SecurityRequirement( name = "credentia_auth" )
     @GetMapping( "/getAllByGroupId" )
     public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsersByGroupId(
             @RequestParam( name = "groupId" ) String groupId ) throws InvalidInputException, EntityNotFoundException {
@@ -148,6 +172,7 @@ public class UserController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = UserResponse.class ), mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
+    @SecurityRequirement( name = "credentia_auth" )
     @GetMapping( "/getAllByOrg" )
     public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsersByOrg(
             @RequestParam( name = "orgId" ) String orgId ) throws InvalidInputException, EntityNotFoundException {
@@ -167,6 +192,7 @@ public class UserController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
             @Content( schema = @Schema( implementation = String.class ), mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
+    @SecurityRequirement( name = "credentia_auth" )
     @PostMapping( "/deleteById" )
     public ResponseEntity<ApiResponse<String>> deleteById( @RequestParam( name = "userId" )
     String userId ) throws InvalidInputException, AppException, EntityNotFoundException {

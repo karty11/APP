@@ -157,7 +157,7 @@ public class CertifierServiceImpl implements CertifierService {
 
     @Override
     public List<CertifierResponse> getAllByCertificateId(
-            String certificateId ) throws InvalidInputException, EntityNotFoundException {
+            String certificateId ) throws InvalidInputException {
 
         if( StringUtils.isEmpty( certificateId ) ) {
             log.error( ErrorCodeAndMessage.CERTIFICATE_ID_MISSING.getMessage() );
@@ -178,7 +178,7 @@ public class CertifierServiceImpl implements CertifierService {
 
     @Override
     public List<CertifierResponse> getAllByOraganization(
-            String organization ) throws InvalidInputException, EntityNotFoundException {
+            String organization ) throws InvalidInputException {
 
         if( StringUtils.isEmpty( organization ) ) {
             log.error( ErrorCodeAndMessage.ORGANIZATION_ID_MISSING.getMessage() );

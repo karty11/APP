@@ -18,10 +18,13 @@ import com.keystoneconstructs.credentia.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +39,10 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     OrganizationRepository organizationRepository;
+
+
+    @Autowired
+    JwtServiceImpl jwtService;
 
     @Override
     public UserResponse createUser( UserRequest userRequest ) throws InvalidInputException, AppException {
@@ -121,6 +128,44 @@ public class UserServiceImpl implements UserService {
 
     }
 
+
+    @Override
+    public String loginUser( String email,
+            String password ) throws InvalidInputException, EntityNotFoundException, AppException {
+
+        if( StringUtils.isEmpty( email ) || StringUtils.isEmpty( password ) ) {
+            log.error( ErrorCodeAndMessage.USER_EMAIL_PASSWORD_MISSING.getMessage() );
+            throw new InvalidInputException( ErrorCodeAndMessage.USER_EMAIL_PASSWORD_MISSING );
+        }
+
+        Optional<UserEntity> user = userRepository.findByEmailIgnoreCase( email );
+
+        if( user.isEmpty() ) {
+            log.error( ErrorCodeAndMessage.USER_EMAIL_NOT_FOUND.getMessage() + "\n" + Constants.EMAIL + " : " + email );
+            throw new EntityNotFoundException( ErrorCodeAndMessage.USER_EMAIL_NOT_FOUND );
+        }
+
+        UserEntity userEntity = user.get();
+
+        if( userEntity.isDeleted() ) {
+            log.error( ErrorCodeAndMessage.USER_EMAIL_NOT_FOUND.getMessage() + "\n" + Constants.EMAIL + " : " + email +
+                    " deactivated." );
+            throw new EntityNotFoundException( ErrorCodeAndMessage.USER_ID_NOT_FOUND );
+        }
+
+        try {
+            if( !userEntity.getEncryptedPassword()
+                    .equals( EncryptionUtils.getEncryptedPassword( password, userEntity.getSalt() ) ) ) {
+                log.error( ErrorCodeAndMessage.INVALID_PASSWORD.getMessage() );
+                throw new InvalidInputException( ErrorCodeAndMessage.INVALID_PASSWORD );
+            }
+        } catch( Exception e ) {
+            log.error( ErrorCodeAndMessage.FAILED_ENCRYPT_PASSWORD.getMessage() );
+            throw new AppException( ErrorCodeAndMessage.FAILED_ENCRYPT_PASSWORD, e );
+        }
+
+        return jwtService.generateToken( userEntity );
+    }
 
     @Override
     public UserResponse updateUser( UserRequest userRequest,
@@ -242,8 +287,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<UserResponse> findAllUsersByUserGroupId(
-            String userGroupId ) throws InvalidInputException, EntityNotFoundException {
+    public List<UserResponse> findAllUsersByUserGroupId( String userGroupId ) throws InvalidInputException {
 
         if( StringUtils.isEmpty( userGroupId ) ) {
             log.error( ErrorCodeAndMessage.INVALID_INPUT_EXCEPTION.getMessage() );
@@ -317,6 +361,32 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    @Override
+    public UserDetails loadUserByUsername( String username ) {
+
+        try {
+            if( StringUtils.isEmpty( username ) ) {
+                log.error( ErrorCodeAndMessage.USER_EMAIL_MISSING.getMessage() );
+                throw new InvalidInputException( ErrorCodeAndMessage.USER_EMAIL_MISSING );
+            }
+
+            Optional<UserEntity> user = userRepository.findByEmailIgnoreCase( username );
+
+            if( user.isEmpty() ) {
+                log.error( ErrorCodeAndMessage.USER_EMAIL_NOT_FOUND.getMessage() + "\n" + Constants.EMAIL + " : " +
+                        username );
+                throw new EntityNotFoundException( ErrorCodeAndMessage.USER_EMAIL_NOT_FOUND );
+            }
+
+            return user.get();
+
+        } catch( InvalidInputException | EntityNotFoundException e ) {
+            throw new RuntimeException( e );
+        }
+
+    }
+
+
     /*--------------------------------------------------------
      ------------------ Private Methods ----------------------
      --------------------------------------------------------*/
@@ -357,6 +427,4 @@ public class UserServiceImpl implements UserService {
         }
 
     }
-
-
 }

@@ -41,6 +41,7 @@ public enum ErrorCodeAndMessage {
     USER_ORG_EMPTY("CRDN0000", "Users not found for given Organization Id."),
     FAILED_ENCRYPT_PASSWORD("CRDN0000", "Failed to encrypt provided Password."),
     INVALID_PASSWORD("CRDN0000", "Password provided is invalid."),
+    USER_EMAIL_PASSWORD_MISSING("CRDN0000", "User Email or Password cannot be null or empty."),
 
 
     /***************************************************************
