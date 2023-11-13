@@ -7,14 +7,14 @@ public abstract class BaseException extends Exception {
 
     protected BaseException( ErrorCodeAndMessage errorCodeAndMessage ) {
 
-        super( errorCodeAndMessage.getErrorCode() + " : " + errorCodeAndMessage.getMessage() );
+        super( errorCodeAndMessage.getMessage() );
         this.errorCodeAndMessage = errorCodeAndMessage;
     }
 
 
     protected BaseException( ErrorCodeAndMessage errorCodeAndMessage, Throwable cause ) {
 
-        super( errorCodeAndMessage.getErrorCode() + " : " + errorCodeAndMessage.getMessage(), cause );
+        super( errorCodeAndMessage.getMessage(), cause );
         this.errorCodeAndMessage = errorCodeAndMessage;
     }
 
