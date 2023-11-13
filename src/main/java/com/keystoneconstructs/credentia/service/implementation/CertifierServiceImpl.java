@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
@@ -33,8 +34,8 @@ public class CertifierServiceImpl implements CertifierService {
 
 
     @Override
-    public List<CertifierResponse> certifyUsers(
-            CertifierRequest certifierRequest ) throws InvalidInputException, EntityNotFoundException, AppException {
+    public List<CertifierResponse> certifyUsers( CertifierRequest certifierRequest, String userId )
+            throws InvalidInputException, EntityNotFoundException, AppException {
 
         if( certifierRequest == null || StringUtils.isEmpty( certifierRequest.getCertificateId() ) ||
                 StringUtils.isEmpty( certifierRequest.getBatchNumber() ) ||
@@ -92,6 +93,11 @@ public class CertifierServiceImpl implements CertifierService {
             certifierEntity.setRecipientName( recipientNames.get( index ) );
             certifierEntity.setRecipientEmail( recipientEmails.get( index ) );
 
+            certifierEntity.setCreatedBy( userId );
+            certifierEntity.setCreatedOn( LocalDateTime.now() );
+            certifierEntity.setUpdatedBy( userId );
+            certifierEntity.setUpdatedOn( LocalDateTime.now() );
+
             certifierEntities.add( certifierEntity );
 
         }
@@ -116,6 +122,7 @@ public class CertifierServiceImpl implements CertifierService {
 
     }
 
+
     @Override
     public CertifierResponse getCertifierById( String id ) throws InvalidInputException, EntityNotFoundException {
 
@@ -134,6 +141,7 @@ public class CertifierServiceImpl implements CertifierService {
         return Converter.convertCertifierEntityToResponse( certifier.get() );
 
     }
+
 
     @Override
     public List<CertifierResponse> getCertifierByEmail( String email ) throws InvalidInputException {
@@ -155,9 +163,9 @@ public class CertifierServiceImpl implements CertifierService {
 
     }
 
+
     @Override
-    public List<CertifierResponse> getAllByCertificateId(
-            String certificateId ) throws InvalidInputException {
+    public List<CertifierResponse> getAllByCertificateId( String certificateId ) throws InvalidInputException {
 
         if( StringUtils.isEmpty( certificateId ) ) {
             log.error( ErrorCodeAndMessage.CERTIFICATE_ID_MISSING.getMessage() );
@@ -176,9 +184,9 @@ public class CertifierServiceImpl implements CertifierService {
 
     }
 
+
     @Override
-    public List<CertifierResponse> getAllByOraganization(
-            String organization ) throws InvalidInputException {
+    public List<CertifierResponse> getAllByOraganization( String organization ) throws InvalidInputException {
 
         if( StringUtils.isEmpty( organization ) ) {
             log.error( ErrorCodeAndMessage.ORGANIZATION_ID_MISSING.getMessage() );
@@ -197,6 +205,7 @@ public class CertifierServiceImpl implements CertifierService {
         return certifierEntities.stream().map( Converter::convertCertifierEntityToResponse ).toList();
 
     }
+
 
     @Override
     public String deleteCertifierById( String id ) throws InvalidInputException, EntityNotFoundException, AppException {
@@ -229,7 +238,9 @@ public class CertifierServiceImpl implements CertifierService {
      ------------------ Private Methods ----------------------
      --------------------------------------------------------*/
 
-    private String getString(String string){
+
+    private String getString( String string ) {
+
         return string;
     }
 

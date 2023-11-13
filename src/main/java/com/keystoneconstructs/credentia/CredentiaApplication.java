@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class CredentiaApplication {
 
     public static void main( String[] args ) {
+
         SpringApplication.run( CredentiaApplication.class, args );
     }
 

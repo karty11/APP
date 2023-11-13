@@ -36,6 +36,7 @@ public class CredentiaControllerAdvice {
         return new ResponseEntity<>( apiResponse, status );
     }
 
+
     @ExceptionHandler( EntityNotFoundException.class )
     public ResponseEntity<ApiResponse<String>> handleEntityNotFoundExceptions( EntityNotFoundException e ) {
 
@@ -52,6 +53,7 @@ public class CredentiaControllerAdvice {
         apiResponse.setErrorCode( e.getErrorCode() );
         return new ResponseEntity<>( apiResponse, status );
     }
+
 
     @ExceptionHandler( InvalidInputException.class )
     public ResponseEntity<ApiResponse<String>> handleInvalidInputExceptions( InvalidInputException e ) {
@@ -70,6 +72,7 @@ public class CredentiaControllerAdvice {
         return new ResponseEntity<>( apiResponse, status );
     }
 
+
     @ExceptionHandler( AppException.class )
     public ResponseEntity<ApiResponse<String>> handleAppExceptions( AppException e ) {
 
@@ -86,6 +89,7 @@ public class CredentiaControllerAdvice {
         apiResponse.setErrorCode( e.getErrorCode() );
         return new ResponseEntity<>( apiResponse, status );
     }
+
 
     @ExceptionHandler( NullPointerException.class )
     public ResponseEntity<ApiResponse<String>> handleNullPointerExceptions( NullPointerException e ) {
@@ -104,6 +108,7 @@ public class CredentiaControllerAdvice {
         return new ResponseEntity<>( apiResponse, status );
     }
 
+
     @ExceptionHandler( InvalidKeySpecException.class )
     public ResponseEntity<ApiResponse<String>> handleInvalidKeySpecException( InvalidKeySpecException e ) {
 
@@ -121,6 +126,7 @@ public class CredentiaControllerAdvice {
         return new ResponseEntity<>( apiResponse, status );
 
     }
+
 
     @ExceptionHandler( NoSuchAlgorithmException.class )
     public ResponseEntity<ApiResponse<String>> handleNoSuchAlgorithmException( NoSuchAlgorithmException e ) {
@@ -157,6 +163,7 @@ public class CredentiaControllerAdvice {
         apiResponse.setErrorCode( e.getCause().getMessage() );
         return new ResponseEntity<>( apiResponse, status );
     }
+
 
     private String convertStackTraceToString( Exception e ) {
 

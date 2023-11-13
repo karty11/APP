@@ -19,7 +19,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @Slf4j
@@ -36,8 +40,8 @@ public class CertificateServiceImpl implements CertificateService {
 
 
     @Override
-    public CertificateResponse addCertificate(
-            CertificateRequest certificateRequest ) throws InvalidInputException, AppException, EntityNotFoundException {
+    public CertificateResponse addCertificate( CertificateRequest certificateRequest, String userId )
+            throws InvalidInputException, AppException, EntityNotFoundException {
 
         if( certificateRequest == null || StringUtils.isEmpty( certificateRequest.getIssuingAuthority() ) ||
                 StringUtils.isEmpty( certificateRequest.getCompanyBranding() ) ||
@@ -88,6 +92,11 @@ public class CertificateServiceImpl implements CertificateService {
             certificateEntity.setWebsite( certificateRequest.getWebsite() );
         }
 
+        certificateEntity.setCreatedBy( userId );
+        certificateEntity.setCreatedOn( LocalDateTime.now() );
+        certificateEntity.setUpdatedBy( userId );
+        certificateEntity.setUpdatedOn( LocalDateTime.now() );
+
         try {
             return Converter.convertCertificateEntityToResponse( certificateRepository.save( certificateEntity ) );
         } catch( Exception e ) {
@@ -97,9 +106,10 @@ public class CertificateServiceImpl implements CertificateService {
 
     }
 
+
     @Override
-    public CertificateResponse updateCertificate( String certificateId,
-            CertificateRequest certificateRequest ) throws InvalidInputException, EntityNotFoundException, AppException {
+    public CertificateResponse updateCertificate( String certificateId, CertificateRequest certificateRequest,
+            String userId ) throws InvalidInputException, EntityNotFoundException, AppException {
 
         if( StringUtils.isEmpty( certificateId ) || certificateRequest == null ) {
             log.error( ErrorCodeAndMessage.INVALID_INPUT_EXCEPTION.getMessage() );
@@ -164,6 +174,9 @@ public class CertificateServiceImpl implements CertificateService {
             certificateEntity.setWebsite( certificateRequest.getWebsite() );
         }
 
+        certificateEntity.setUpdatedBy( userId );
+        certificateEntity.setUpdatedOn( LocalDateTime.now() );
+
         try {
             return Converter.convertCertificateEntityToResponse( certificateRepository.save( certificateEntity ) );
         } catch( Exception e ) {
@@ -174,9 +187,10 @@ public class CertificateServiceImpl implements CertificateService {
 
     }
 
+
     @Override
-    public CertificateResponse findCertificateById(
-            String certificateId ) throws InvalidInputException, EntityNotFoundException {
+    public CertificateResponse findCertificateById( String certificateId )
+            throws InvalidInputException, EntityNotFoundException {
 
         if( StringUtils.isEmpty( certificateId ) ) {
             log.error( ErrorCodeAndMessage.CERTIFIER_ID_MISSING.getMessage() );
@@ -194,6 +208,7 @@ public class CertificateServiceImpl implements CertificateService {
         return Converter.convertCertificateEntityToResponse( certificate.get() );
 
     }
+
 
     @Override
     public List<CertificateResponse> findAllCertificatesByOrganization( String orgId ) throws InvalidInputException {
@@ -215,9 +230,10 @@ public class CertificateServiceImpl implements CertificateService {
 
     }
 
+
     @Override
-    public String deleteCertificateById(
-            String certificateId ) throws InvalidInputException, EntityNotFoundException, AppException {
+    public String deleteCertificateById( String certificateId )
+            throws InvalidInputException, EntityNotFoundException, AppException {
 
         if( StringUtils.isEmpty( certificateId ) ) {
             log.error( ErrorCodeAndMessage.CERTIFICATE_ID_MISSING.getMessage() );
@@ -249,7 +265,9 @@ public class CertificateServiceImpl implements CertificateService {
      ------------------ Private Methods ----------------------
      --------------------------------------------------------*/
 
+
     private String getString( String string ) {
+
         return string;
     }
 

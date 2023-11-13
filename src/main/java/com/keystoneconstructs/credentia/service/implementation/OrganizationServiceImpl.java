@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -28,9 +29,10 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Autowired
     OrganizationRepository organizationRepository;
 
+
     @Override
-    public OrganizationResponse createOrganization(
-            OrganizationRequest organizationRequest ) throws InvalidInputException, AppException {
+    public OrganizationResponse createOrganization( OrganizationRequest organizationRequest )
+            throws InvalidInputException, AppException {
 
         if( organizationRequest == null || StringUtils.isEmpty( organizationRequest.getName() ) ||
                 StringUtils.isEmpty( organizationRequest.getOrgCode() ) ) {
@@ -70,9 +72,10 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     }
 
+
     @Override
-    public OrganizationResponse updateOrganization( OrganizationRequest organizationRequest,
-            String organizationId ) throws InvalidInputException, EntityNotFoundException, AppException {
+    public OrganizationResponse updateOrganization( OrganizationRequest organizationRequest, String organizationId,
+            String userId ) throws InvalidInputException, EntityNotFoundException, AppException {
 
         if( StringUtils.isEmpty( organizationId ) || organizationRequest == null ) {
             log.info( ErrorCodeAndMessage.INVALID_INPUT_EXCEPTION.getMessage() );
@@ -111,6 +114,9 @@ public class OrganizationServiceImpl implements OrganizationService {
             organizationEntity.setContact( Converter.convertContactToEntity( organizationRequest.getContact() ) );
         }
 
+        organizationEntity.setUpdatedBy( userId );
+        organizationEntity.setUpdatedOn( LocalDateTime.now() );
+
         try {
             return Converter.convertOrganizationEntityToResponse( organizationRepository.save( organizationEntity ) );
         } catch( Exception e ) {
@@ -121,9 +127,10 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     }
 
+
     @Override
-    public OrganizationResponse findOrganizationById(
-            String organizationId ) throws EntityNotFoundException, InvalidInputException {
+    public OrganizationResponse findOrganizationById( String organizationId )
+            throws EntityNotFoundException, InvalidInputException {
 
         if( StringUtils.isEmpty( organizationId ) ) {
             log.error( ErrorCodeAndMessage.ORGANIZATION_ID_MISSING.getMessage() );
@@ -142,6 +149,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     }
 
+
     @Override
     public List<OrganizationResponse> findAllOrganizations() {
 
@@ -155,9 +163,10 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     }
 
+
     @Override
-    public String deleteOrganizationById(
-            String organizationId ) throws InvalidInputException, EntityNotFoundException, AppException {
+    public String deleteOrganizationById( String organizationId )
+            throws InvalidInputException, EntityNotFoundException, AppException {
 
         if( StringUtils.isEmpty( organizationId ) ) {
             log.error( ErrorCodeAndMessage.ORGANIZATION_ID_MISSING.getMessage() );
@@ -189,7 +198,9 @@ public class OrganizationServiceImpl implements OrganizationService {
      ------------------ Private Methods ----------------------
      --------------------------------------------------------*/
 
+
     private String getString( String string ) {
+
         return string;
     }
 

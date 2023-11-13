@@ -14,13 +14,14 @@ public interface EncryptionUtils {
 
     /**
      * This method encrypts the password using PBKDF2 hash algorithm.
+     *
      * @param password
      * @param salt
      * @return encodedString
      * @throws Exception
      */
-    static String getEncryptedPassword( String password,
-            String salt ) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    static String getEncryptedPassword( String password, String salt )
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
 
         String algorithm = Constants.ENCRYPT_ALGO;
         int derivedKeyLength = 256;
@@ -37,13 +38,14 @@ public interface EncryptionUtils {
 
     /**
      * This method generates a new Salt as String.
+     *
      * @return salt
      * @throws NoSuchAlgorithmException
      */
     static String getNewSalt() throws NoSuchAlgorithmException {
 
         SecureRandom random = SecureRandom.getInstance( "SHA1PRNG" );
-        byte[] salt = new byte[ 8 ];
+        byte[] salt = new byte[8];
 
         random.nextBytes( salt );
 

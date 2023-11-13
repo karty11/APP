@@ -25,15 +25,14 @@ import java.util.List;
 @RequestMapping( "/api/v1/organization" )
 public class OrganizationController {
 
-
     @Autowired
     OrganizationService organizationService;
 
 
     @Operation( summary = "API to create new Organization.",
             description = "This API creates a new Organization based on Organization Request." )
-    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
-            @Content( schema = @Schema( implementation = OrganizationResponse.class ),
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200",
+            content = { @Content( schema = @Schema( implementation = OrganizationResponse.class ),
                     mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PutMapping( "/add" )
@@ -52,19 +51,20 @@ public class OrganizationController {
 
     @Operation( summary = "API to update existing Organization.",
             description = "This API updates an existing Organization based on Organization Id and Organization Request." )
-    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
-            @Content( schema = @Schema( implementation = OrganizationResponse.class ),
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200",
+            content = { @Content( schema = @Schema( implementation = OrganizationResponse.class ),
                     mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PostMapping( "/edit" )
     public ResponseEntity<ApiResponse<OrganizationResponse>> updateOrganization(
-            @RequestParam( name = "orgId" ) String organizationId, @RequestBody
-    OrganizationRequest organizationRequest ) throws InvalidInputException, AppException, EntityNotFoundException {
+            @RequestParam( name = "orgId" ) String organizationId, @RequestBody OrganizationRequest organizationRequest,
+            @RequestHeader( "userId" ) String userId )
+            throws InvalidInputException, AppException, EntityNotFoundException {
 
         ApiResponse<OrganizationResponse> response = new ApiResponse<>();
         response.setSuccess( true );
         response.setMessage( "Successfully updated Organization." );
-        response.setResponse( organizationService.updateOrganization( organizationRequest, organizationId ) );
+        response.setResponse( organizationService.updateOrganization( organizationRequest, organizationId, userId ) );
 
         return new ResponseEntity<>( response, HttpStatus.OK );
 
@@ -73,8 +73,8 @@ public class OrganizationController {
 
     @Operation( summary = "API to get existing Organization by Id.",
             description = "This API retrieves an existing Organization based on Organization Id." )
-    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
-            @Content( schema = @Schema( implementation = OrganizationResponse.class ),
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200",
+            content = { @Content( schema = @Schema( implementation = OrganizationResponse.class ),
                     mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getById" )
@@ -93,8 +93,8 @@ public class OrganizationController {
 
     @Operation( summary = "API to get all existing Organizations.",
             description = "This API retrieves all existing Organizations." )
-    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
-            @Content( schema = @Schema( implementation = OrganizationResponse.class ),
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200",
+            content = { @Content( schema = @Schema( implementation = OrganizationResponse.class ),
                     mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getAll" )
@@ -112,12 +112,13 @@ public class OrganizationController {
 
     @Operation( summary = "API to delete an Organization by Id.",
             description = "This API deletes an existing Organization based on Organization Id." )
-    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
-            @Content( schema = @Schema( implementation = String.class ), mediaType = "application/json" ) } )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200",
+            content = { @Content( schema = @Schema( implementation = String.class ),
+                    mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PostMapping( "/deleteById" )
-    public ResponseEntity<ApiResponse<String>> deleteById( @RequestParam( name = "orgId" )
-    String orgId ) throws InvalidInputException, AppException, EntityNotFoundException {
+    public ResponseEntity<ApiResponse<String>> deleteById( @RequestParam( name = "orgId" ) String orgId )
+            throws InvalidInputException, AppException, EntityNotFoundException {
 
         ApiResponse<String> response = new ApiResponse<>();
         response.setSuccess( true );

@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +21,12 @@ public class BuildController {
     @Value( "${environment}" )
     private String environment;
 
+
     @Operation( summary = "API to get current environment in use.",
             description = "This API will retrieve current deployed environment." )
-    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
-            @Content( schema = @Schema( implementation = String.class ), mediaType = "application/json" ) } )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200",
+            content = { @Content( schema = @Schema( implementation = String.class ),
+                    mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/environment" )
     public ResponseEntity<ApiResponse<String>> getEnvironment() {

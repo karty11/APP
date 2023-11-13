@@ -32,18 +32,19 @@ public class CertificateController {
 
     @Operation( summary = "API to create new Certificate.",
             description = "This API creates a new Certificate based on Certificate Request." )
-    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
-            @Content( schema = @Schema( implementation = CertificateResponse.class ),
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200",
+            content = { @Content( schema = @Schema( implementation = CertificateResponse.class ),
                     mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PutMapping( "/add" )
-    public ResponseEntity<ApiResponse<CertificateResponse>> createCertificate( @RequestBody
-    CertificateRequest certificateRequest ) throws InvalidInputException, AppException, EntityNotFoundException {
+    public ResponseEntity<ApiResponse<CertificateResponse>> createCertificate(
+            @RequestBody CertificateRequest certificateRequest, @RequestHeader( "userId" ) String userId )
+            throws InvalidInputException, AppException, EntityNotFoundException {
 
         ApiResponse<CertificateResponse> response = new ApiResponse<>();
         response.setSuccess( true );
         response.setMessage( "Successfully created new Certificate." );
-        response.setResponse( certificateService.addCertificate( certificateRequest ) );
+        response.setResponse( certificateService.addCertificate( certificateRequest, userId ) );
 
         return new ResponseEntity<>( response, HttpStatus.CREATED );
 
@@ -52,19 +53,21 @@ public class CertificateController {
 
     @Operation( summary = "API to update existing Certificate.",
             description = "This API updates an existing Certificate based on Certificate Id and Certificate Request." )
-    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
-            @Content( schema = @Schema( implementation = CertificateResponse.class ),
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200",
+            content = { @Content( schema = @Schema( implementation = CertificateResponse.class ),
                     mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PostMapping( "/edit" )
     public ResponseEntity<ApiResponse<CertificateResponse>> updateCertificate(
-            @RequestParam( name = "certificateId" ) String certificateId, @RequestBody
-    CertificateRequest certificateRequest ) throws InvalidInputException, AppException, EntityNotFoundException {
+            @RequestParam( name = "certificateId" ) String certificateId,
+            @RequestBody CertificateRequest certificateRequest,
+            @RequestHeader( "userId" ) String userId )
+            throws InvalidInputException, AppException, EntityNotFoundException {
 
         ApiResponse<CertificateResponse> response = new ApiResponse<>();
         response.setSuccess( true );
         response.setMessage( "Successfully updated Certificate." );
-        response.setResponse( certificateService.updateCertificate( certificateId, certificateRequest ) );
+        response.setResponse( certificateService.updateCertificate( certificateId, certificateRequest, userId ) );
 
         return new ResponseEntity<>( response, HttpStatus.OK );
 
@@ -73,13 +76,14 @@ public class CertificateController {
 
     @Operation( summary = "API to get existing Certificate by Id.",
             description = "This API retrieves an existing Certificate based on Certificate Id." )
-    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
-            @Content( schema = @Schema( implementation = CertificateResponse.class ),
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200",
+            content = { @Content( schema = @Schema( implementation = CertificateResponse.class ),
                     mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getById" )
-    public ResponseEntity<ApiResponse<CertificateResponse>> getCertificateById( @RequestParam( name = "certificateId" )
-    String certificateId ) throws InvalidInputException, EntityNotFoundException {
+    public ResponseEntity<ApiResponse<CertificateResponse>> getCertificateById(
+            @RequestParam( name = "certificateId" ) String certificateId )
+            throws InvalidInputException, EntityNotFoundException {
 
         ApiResponse<CertificateResponse> response = new ApiResponse<>();
         response.setSuccess( true );
@@ -93,8 +97,8 @@ public class CertificateController {
 
     @Operation( summary = "API to get all existing Certificates.",
             description = "This API retrieves all existing Certificates based on Organization Id." )
-    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
-            @Content( schema = @Schema( implementation = CertificateResponse.class ),
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200",
+            content = { @Content( schema = @Schema( implementation = CertificateResponse.class ),
                     mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @GetMapping( "/getAll" )
@@ -114,12 +118,14 @@ public class CertificateController {
 
     @Operation( summary = "API to delete an Certificate by Id.",
             description = "This API deletes an existing Certificate based on Certificate Id." )
-    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200", content = {
-            @Content( schema = @Schema( implementation = String.class ), mediaType = "application/json" ) } )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "200",
+            content = { @Content( schema = @Schema( implementation = String.class ),
+                    mediaType = "application/json" ) } )
     @CrossOrigin( origins = "*", allowedHeaders = "*" )
     @PostMapping( "/deleteById" )
-    public ResponseEntity<ApiResponse<String>> deleteById( @RequestParam( name = "certificateId" )
-    String certificateId ) throws InvalidInputException, AppException, EntityNotFoundException {
+    public ResponseEntity<ApiResponse<String>> deleteById(
+            @RequestParam( name = "certificateId" ) String certificateId )
+            throws InvalidInputException, AppException, EntityNotFoundException {
 
         ApiResponse<String> response = new ApiResponse<>();
         response.setSuccess( true );

@@ -8,6 +8,7 @@ public interface Converter {
 
     /**
      * This method converts Contact Object to Contact Entity.
+     *
      * @param contact - Contact Object.
      * @return contactEntity - Contact Entity Object.
      */
@@ -46,6 +47,7 @@ public interface Converter {
 
     /**
      * This method converts Contact Entity to Contact object.
+     *
      * @param contactEntity - Contact Entity Object.
      * @return contact - Contact Object.
      */
@@ -83,6 +85,7 @@ public interface Converter {
 
     /**
      * This method converts a User Entity to User Response Object.
+     *
      * @param userEntity - User Entity Object.
      * @return userResponse - User Response Object.
      */
@@ -115,6 +118,7 @@ public interface Converter {
 
     /**
      * This method converts an Organization Entity to Organization Response object.
+     *
      * @param organizationEntity - Organization Entity Object.
      * @return organizationResponse - Organization Response Object.
      */
@@ -136,6 +140,7 @@ public interface Converter {
 
     /**
      * This method converts a Certificate Entity to Certificate Response.
+     *
      * @param certificateEntity - Certificate Entity Object.
      * @return certificateResponse - Certificate Response Object.
      */
@@ -171,6 +176,7 @@ public interface Converter {
 
     /**
      * This method converts a Certifier Entity to Certifier Response type.
+     *
      * @param certifierEntity - Certifier Entity Object.
      * @return certifierResponse - Certifier Response Object.
      */

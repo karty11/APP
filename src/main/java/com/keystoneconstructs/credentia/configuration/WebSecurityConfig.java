@@ -31,8 +31,10 @@ public class WebSecurityConfig {
     @Autowired
     private UserService userService;
 
+
     @Bean
     public UserService userService() {
+
         return userService;
     }
 
@@ -60,21 +62,27 @@ public class WebSecurityConfig {
 
     }
 
+
     @Bean
     public AuthenticationProvider authenticationProvider() {
+
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService( userService );
         authenticationProvider.setPasswordEncoder( passwordEncoder() );
         return authenticationProvider;
     }
 
+
     @Bean
     public PasswordEncoder passwordEncoder() {
+
         return new BCryptPasswordEncoder();
     }
 
+
     @Bean
     public AuthenticationManager authenticationManager( AuthenticationConfiguration config ) throws Exception {
+
         return config.getAuthenticationManager();
     }
 

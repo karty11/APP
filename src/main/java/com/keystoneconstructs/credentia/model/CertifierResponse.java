@@ -28,5 +28,4 @@ public class CertifierResponse {
     private String recipientOrganization;
 
 
-
 }

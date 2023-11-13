@@ -8,6 +8,7 @@ import com.keystoneconstructs.credentia.exception.AppException;
 import com.keystoneconstructs.credentia.exception.EntityNotFoundException;
 import com.keystoneconstructs.credentia.exception.ErrorCodeAndMessage;
 import com.keystoneconstructs.credentia.exception.InvalidInputException;
+import com.keystoneconstructs.credentia.model.LoginResponse;
 import com.keystoneconstructs.credentia.model.UserRequest;
 import com.keystoneconstructs.credentia.model.UserResponse;
 import com.keystoneconstructs.credentia.pojo.OrganizationEntity;
@@ -19,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.security.NoSuchAlgorithmException;
@@ -44,6 +44,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     JwtServiceImpl jwtService;
 
+
     @Override
     public UserResponse createUser( UserRequest userRequest ) throws InvalidInputException, AppException {
 
@@ -65,6 +66,7 @@ public class UserServiceImpl implements UserService {
         log.info( "Creating user." );
 
         UserEntity userEntity = new UserEntity();
+        userEntity.setId( UUID.randomUUID().toString() );
 
         //        OrganizationEntity organization = organizationRepository.findById( userRequest.getOrganizationId() )
         //                .orElseThrow( () -> new EntityNotFoundException(
@@ -84,13 +86,17 @@ public class UserServiceImpl implements UserService {
                 organizationEntity.setIndustry( userRequest.getOrganizationRequest().getOrganizationIndustry() );
             }
 
+            organizationEntity.setCreatedBy( userEntity.getId() );
+            organizationEntity.setCreatedOn( LocalDateTime.now() );
+            organizationEntity.setUpdatedBy( userEntity.getId() );
+            organizationEntity.setUpdatedOn( LocalDateTime.now() );
+
             organizationEntity = organizationRepository.save( organizationEntity );
 
         } else {
             organizationEntity = organization.get();
         }
 
-        userEntity.setId( UUID.randomUUID().toString() );
         userEntity.setOrganization( organizationEntity );
         userEntity.setFirstName( userRequest.getFirstName() );
         userEntity.setLastName( userRequest.getLastName() );
@@ -118,6 +124,11 @@ public class UserServiceImpl implements UserService {
             throw new AppException( ErrorCodeAndMessage.FAILED_ENCRYPT_PASSWORD, e );
         }
 
+        userEntity.setCreatedBy( userEntity.getId() );
+        userEntity.setCreatedOn( LocalDateTime.now() );
+        userEntity.setUpdatedBy( userEntity.getId() );
+        userEntity.setUpdatedOn( LocalDateTime.now() );
+
         try {
             log.info( "User Created with Id -> " + userEntity.getId() );
             return Converter.convertUserEntityToResponse( userRepository.save( userEntity ) );
@@ -130,8 +141,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public String loginUser( String email,
-            String password ) throws InvalidInputException, EntityNotFoundException, AppException {
+    public LoginResponse loginUser( String email, String password )
+            throws InvalidInputException, EntityNotFoundException, AppException {
 
         if( StringUtils.isEmpty( email ) || StringUtils.isEmpty( password ) ) {
             log.error( ErrorCodeAndMessage.USER_EMAIL_PASSWORD_MISSING.getMessage() );
@@ -164,12 +175,17 @@ public class UserServiceImpl implements UserService {
             throw new AppException( ErrorCodeAndMessage.FAILED_ENCRYPT_PASSWORD, e );
         }
 
-        return jwtService.generateToken( userEntity );
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setUserResponse( Converter.convertUserEntityToResponse( userEntity ) );
+        loginResponse.setToken( jwtService.generateToken( userEntity ) );
+
+        return loginResponse;
     }
 
+
     @Override
-    public UserResponse updateUser( UserRequest userRequest,
-            String userId ) throws InvalidInputException, EntityNotFoundException, AppException {
+    public UserResponse updateUser( UserRequest userRequest, String userId )
+            throws InvalidInputException, EntityNotFoundException, AppException {
 
         if( userRequest == null || StringUtils.isEmpty( userId ) ) {
             log.error( ErrorCodeAndMessage.INVALID_INPUT_EXCEPTION.getMessage() );
@@ -195,6 +211,9 @@ public class UserServiceImpl implements UserService {
 
         verifyUpdateUserEntity( userEntity, userRequest );
 
+        userEntity.setUpdatedBy( userId );
+        userEntity.setUpdatedOn( LocalDateTime.now() );
+
         try {
             log.info( "Updated user with id -> " + userId );
             return Converter.convertUserEntityToResponse( userRepository.save( userEntity ) );
@@ -205,9 +224,10 @@ public class UserServiceImpl implements UserService {
 
     }
 
+
     @Override
-    public UserResponse updatePassword( String userId, String oldPassword,
-            String newPassword ) throws InvalidInputException, EntityNotFoundException, AppException {
+    public UserResponse updatePassword( String userId, String oldPassword, String newPassword )
+            throws InvalidInputException, EntityNotFoundException, AppException {
 
         if( StringUtils.isEmpty( userId ) || StringUtils.isEmpty( oldPassword ) ||
                 StringUtils.isEmpty( newPassword ) ) {
@@ -236,6 +256,9 @@ public class UserServiceImpl implements UserService {
             userEntity.setEncryptedPassword(
                     EncryptionUtils.getEncryptedPassword( newPassword, userEntity.getSalt() ) );
 
+            userEntity.setUpdatedBy( userId );
+            userEntity.setUpdatedOn( LocalDateTime.now() );
+
             log.info( "Successfully updated Password for User with id " + userId + "." );
 
             return Converter.convertUserEntityToResponse( userRepository.save( userEntity ) );
@@ -245,6 +268,7 @@ public class UserServiceImpl implements UserService {
         }
 
     }
+
 
     @Override
     public UserResponse findUserById( String userId ) throws InvalidInputException, EntityNotFoundException {
@@ -307,8 +331,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<UserResponse> findAllUsersByOrganizationId(
-            String orgId ) throws InvalidInputException, EntityNotFoundException {
+    public List<UserResponse> findAllUsersByOrganizationId( String orgId )
+            throws InvalidInputException, EntityNotFoundException {
 
         if( StringUtils.isEmpty( orgId ) ) {
             log.error( ErrorCodeAndMessage.ORGANIZATION_ID_MISSING.getMessage() );
@@ -391,8 +415,10 @@ public class UserServiceImpl implements UserService {
      ------------------ Private Methods ----------------------
      --------------------------------------------------------*/
 
+
     /**
      * This method verifies and supplies User Request fields to User Entity.
+     *
      * @param userEntity  - User Entity object
      * @param userRequest - User Request object
      */
@@ -427,4 +453,5 @@ public class UserServiceImpl implements UserService {
         }
 
     }
+
 }

@@ -4,23 +4,30 @@ public abstract class BaseException extends Exception {
 
     private ErrorCodeAndMessage errorCodeAndMessage;
 
+
     protected BaseException( ErrorCodeAndMessage errorCodeAndMessage ) {
+
         super( errorCodeAndMessage.getErrorCode() + " : " + errorCodeAndMessage.getMessage() );
         this.errorCodeAndMessage = errorCodeAndMessage;
     }
 
+
     protected BaseException( ErrorCodeAndMessage errorCodeAndMessage, Throwable cause ) {
+
         super( errorCodeAndMessage.getErrorCode() + " : " + errorCodeAndMessage.getMessage(), cause );
         this.errorCodeAndMessage = errorCodeAndMessage;
     }
 
 
     public String getErrorCode() {
+
         return this.errorCodeAndMessage.getErrorCode();
 
     }
 
+
     public String getErrorMessage() {
+
         return this.errorCodeAndMessage.getMessage();
 
     }

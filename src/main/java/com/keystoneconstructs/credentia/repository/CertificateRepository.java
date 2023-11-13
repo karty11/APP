@@ -9,9 +9,9 @@ import java.util.Optional;
 public interface CertificateRepository extends JpaRepository<CertificateEntity, String> {
 
 
-    Optional<CertificateEntity> findByNameIgnoreCase(String name);
+    Optional<CertificateEntity> findByNameIgnoreCase( String name );
 
 
-    List<CertificateEntity> findAllByOrganization_id(String orgId);
+    List<CertificateEntity> findAllByOrganization_id( String orgId );
 
 }

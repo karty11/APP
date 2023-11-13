@@ -31,6 +31,7 @@ public class SwaggerConfiguration {
 
 
     private SecurityScheme createAPIKeyScheme() {
+
         return new SecurityScheme().type( SecurityScheme.Type.HTTP ).in( SecurityScheme.In.HEADER )
                 .name( "credentia_auth" ).bearerFormat( "JWT" ).scheme( "bearer" );
     }
